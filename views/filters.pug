@@ -1,0 +1,75 @@
+extends layout
+
+block content
+  - var page = 'filtros'
+  - const filtrosForm = filtros || {}
+
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-filter.text-info.me-3
+        | Filtros de Tareas
+
+  .row
+    .col-lg-6
+      .card
+        .card-body
+          form#filtroForm(action="/tareas/filtrar", method="GET")
+            .mb-3
+              label.form-label(for="estado") Estado
+              select.form-control(id="estado", name="estado")
+                option(value="", selected=!filtrosForm.estado) Todos
+                option(value="pendiente", selected=filtrosForm.estado === 'pendiente') Pendiente
+                option(value="en_proceso", selected=filtrosForm.estado === 'en_proceso') En Proceso
+                option(value="finalizada", selected=filtrosForm.estado === 'finalizada') Finalizada
+            .mb-3
+              label.form-label(for="prioridad") Prioridad
+              select.form-control(id="prioridad", name="prioridad")
+                option(value="", selected=!filtrosForm.prioridad) Todos
+                option(value="alta", selected=filtrosForm.prioridad === 'alta') Alta
+                option(value="media", selected=filtrosForm.prioridad === 'media') Media
+                option(value="baja", selected=filtrosForm.prioridad === 'baja') Baja
+            .mb-3
+              label.form-label(for="area") Área
+              select.form-control(id="area", name="area")
+                option(value="", selected=!filtrosForm.area) Todos
+                option(value="gestion_pedidos", selected=filtrosForm.area === 'gestion_pedidos') Gestión Pedidos
+                option(value="control_inventario", selected=filtrosForm.area === 'control_inventario') Control Inventario
+            .mb-3
+              label.form-label(for="empleadoAsignado") Empleado Asignado
+              select.form-control(id="empleadoAsignado", name="empleadoAsignado")
+                option(value="", selected=!filtrosForm.empleadoAsignado) Todos
+                if empleados
+                  each emp in empleados
+                    option(value=emp._id, selected=String(filtrosForm.empleadoAsignado) === String(emp._id)) #{emp.nombre} #{emp.apellido}
+            
+            // Filtro de Pedido Asociado
+            .mb-3
+              label.form-label(for="pedidoAsociado") Pedido Asociado
+              select.form-control(id="pedidoAsociado", name="pedidoAsociado")
+                option(value="", selected=!filtrosForm.pedidoAsociado) Todos
+                if pedidos
+                  each ped in pedidos
+                    - var clienteNombre = ped.cliente && ped.cliente.nombre ? ped.cliente.nombre : 'Presencial'
+                    option(value=ped._id, selected=String(filtrosForm.pedidoAsociado) === String(ped._id)) Pedido ##{ped.numeroOrden || 'N/A'} - #{clienteNombre}
+
+            // Otros filtros (Ajustar si son necesarios para Tareas)
+            //- .mb-3
+            //-   label.form-label(for="tipoPedido") Tipo de Pedido (Filtro de Ejemplo)
+            //-   select.form-control(id="tipoPedido", name="tipoPedido") ...
+            //- .mb-3
+            //-   label.form-label(for="plataforma") Plataforma (Filtro de Ejemplo)
+            //-   select.form-control(id="plataforma", name="plataforma") ...
+            .mb-3
+              label.form-label(for="fechaDesde") Fecha Desde
+              input.form-control(type="date", id="fechaDesde", name="fechaDesde", value=filtrosForm.fechaDesde || '')
+            .mb-3
+              label.form-label(for="fechaHasta") Fecha Hasta
+              input.form-control(type="date", id="fechaHasta", name="fechaHasta", value=filtrosForm.fechaHasta || '')
+            .d-grid
+              button.btn.btn-info(type="submit")
+                i.fas.fa-filter.me-2
+                | Aplicar Filtros
+          a.btn.btn-outline-secondary.mt-3(href="/tareas")
+            i.fas.fa-arrow-left.me-2
+            | Volver

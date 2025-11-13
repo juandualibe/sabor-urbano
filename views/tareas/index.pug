@@ -1,0 +1,112 @@
+extends ../layout
+
+block content
+  - var page = 'tareas'
+  
+  .row.mb-4
+    .col-12
+      .d-flex.justify-content-between.align-items-center
+        h1.display-6
+          i.fas.fa-tasks.text-primary.me-3
+          | Gestión de Tareas
+        a.btn.btn-primary(href="/tareas/nueva")
+          i.fas.fa-plus.me-2
+          | Nueva Tarea
+
+  if tareas && tareas.length > 0
+    .row
+      .col-12
+        .card
+          .card-header.bg-dark.text-white
+            h5.mb-0
+              i.fas.fa-list.me-2
+              | Lista de Tareas (#{tareas.length})
+          .card-body.p-0
+            .table-responsive
+              table.table.table-hover.mb-0
+                thead.table-light
+                  tr
+                    th Título
+                    th Área
+                    th Estado
+                    th Prioridad
+                    th Empleado Asignado
+                    th Pedido Asociado 
+                    th Fecha Creación
+                    th Acciones
+                tbody
+                  each tarea in tareas
+                    tr
+                      td
+                        strong= tarea.titulo
+                        if tarea.descripcion
+                          br
+                          small.text-muted= tarea.descripcion
+                      td
+                        span.badge(class= tarea.area === 'gestion_pedidos' ? 'bg-primary' : 'bg-info')= tarea.area
+                      td
+                        span.badge(class= tarea.estado === 'pendiente' ? 'bg-warning' : tarea.estado === 'en_proceso' ? 'bg-primary' : 'bg-success')
+                          i.fas(class= tarea.estado === 'pendiente' ? 'fa-clock' : tarea.estado === 'en_proceso' ? 'fa-play' : 'fa-check').me-1
+                          | #{tarea.estado}
+                      td
+                        span.badge(class= tarea.prioridad === 'alta' ? 'bg-danger' : tarea.prioridad === 'media' ? 'bg-warning' : 'bg-secondary')= tarea.prioridad
+                      td
+                        if tarea.empleadoAsignado
+                          i.fas.fa-user.me-1
+                          | #{tarea.empleadoAsignado.nombre} #{tarea.empleadoAsignado.apellido}
+                        else
+                          span.text-muted Sin asignar
+                      
+                      // Mostrar info del Pedido Asociado (si existe)
+                      td
+                        //- Quitamos el comentario inline de aquí
+                        if tarea.pedidoAsociado && typeof tarea.pedidoAsociado === 'object' 
+                          - var clienteNombre = tarea.pedidoAsociado.cliente && tarea.pedidoAsociado.cliente.nombre ? tarea.pedidoAsociado.cliente.nombre : 'Presencial'
+                          i.fas.fa-shopping-bag.me-1
+                          | ##{tarea.pedidoAsociado.numeroOrden || 'ID:' + tarea.pedidoAsociado._id} (#{clienteNombre})
+                        else if tarea.pedidoAsociado 
+                          small= 'ID: ' + tarea.pedidoAsociado
+                        else
+                          span.text-muted Sin pedido
+
+                      td
+                        small= tarea.fechaCreacion ? new Date(tarea.fechaCreacion).toLocaleDateString('es-AR') : 'N/A'
+                      td
+                        .btn-group(role="group")
+                          a.btn.btn-sm.btn-outline-primary(href=`/api/tareas/${tarea._id}`, target="_blank", title="Ver JSON")
+                            i.fas.fa-eye
+                          a.btn.btn-sm.btn-outline-warning(href=`/tareas/editar/${tarea._id}`, title="Editar Tarea")
+                            i.fas.fa-edit
+                          button.btn.btn-sm.btn-outline-danger(data-id=tarea._id, onclick="eliminarTarea(this)", title="Eliminar Tarea")
+                            i.fas.fa-trash
+    //- Script JS para el botón eliminar
+    script.
+      async function eliminarTarea(button) {
+        const id = button.getAttribute('data-id');
+        if (confirm(`¿Estás seguro de eliminar la tarea ID: ${id}?`)) {
+          try {
+            const response = await fetch(`/api/tareas/${id}`, { method: 'DELETE' }); 
+            const result = await response.json();
+            if (response.ok && result.success) {
+              alert('Tarea eliminada exitosamente');
+              location.reload(); 
+            } else {
+              alert(`Error al eliminar: ${result.message || 'Error desconocido'}`);
+            }
+          } catch (error) {
+            console.error('Error en fetch DELETE:', error);
+            alert('Error de conexión al eliminar la tarea.');
+          }
+        }
+      }
+  else
+    .row
+      .col-12
+        .card
+          .card-body.text-center.py-5
+            i.fas.fa-tasks.text-muted.mb-3(style="font-size: 4rem;")
+            h4.text-muted No hay tareas disponibles
+            p.text-muted Crea una nueva tarea para comenzar
+            a.btn.btn-primary(href="/tareas/nueva")
+              i.fas.fa-plus.me-2
+              | Crear Primera Tarea

@@ -1,0 +1,80 @@
+extends ../layout
+
+block content
+  - var page = 'productos'
+ 
+  .row.mb-4
+    .col-12
+      .d-flex.justify-content-between.align-items-center
+        h1.display-6
+          i.fas.fa-boxes.text-success.me-3
+          | Gestión de Productos
+        a.btn.btn-success(href="/productos/nuevo")
+          i.fas.fa-plus.me-2
+          | Nuevo Producto
+
+  if productos && productos.length > 0
+    .row
+      .col-12
+        .card
+          .card-header.bg-dark.text-white
+            h5.mb-0
+              i.fas.fa-boxes.me-2
+              | Lista de Productos (#{productos.length})
+          .card-body.p-0
+            .table-responsive
+              table.table.table-hover.mb-0
+                thead.table-light
+                  tr
+                    th ID
+                    th Nombre
+                    th Stock
+                    th Acciones
+                tbody
+                  each producto in productos
+                    tr
+                      td= producto._id   
+                      td= producto.nombre
+                      td
+                        if producto.stock
+                          span.badge.bg-success En stock
+                        else
+                          span.badge.bg-danger Sin stock
+                      td
+                        .btn-group(role="group")
+                          a.btn.btn-sm.btn-outline-primary(href=`/api/productos/${producto._id}`, target="_blank", title="Ver")
+                            i.fas.fa-eye
+                          a.btn.btn-sm.btn-outline-warning(href=`/productos/editar/${producto._id}`, title="Editar")
+                            i.fas.fa-edit
+                          button.btn.btn-sm.btn-outline-danger(data-id=producto._id, onclick="eliminarProducto(this)", title="Eliminar")
+                            i.fas.fa-trash
+    script.
+      async function eliminarProducto(button) {
+        const id = button.getAttribute('data-id'); 
+        if (confirm(`¿Estás seguro de eliminar el producto ID: ${id}?`)) {
+          try {
+            const response = await fetch(`/api/productos/${id}`, { method: 'DELETE' }); 
+            const result = await response.json();
+            if (result.success) {
+              alert('Producto eliminado exitosamente');
+              location.reload();
+            } else {
+              alert(`Error: ${result.message}`);
+            }
+          } catch (error) {
+            console.error('Error al eliminar producto:', error); 
+            alert('Error de conexión al eliminar el producto');
+          }
+        }
+      }
+  else
+    .row
+      .col-12
+        .card
+          .card-body.text-center.py-5
+            i.fas.fa-boxes.text-muted.mb-3(style="font-size: 4rem;")
+            h4.text-muted No hay productos registrados
+            p.text-muted Registra el primer producto para comenzar
+            a.btn.btn-success(href="/productos/nuevo")
+              i.fas.fa-plus.me-2
+              | Registrar Primer Producto

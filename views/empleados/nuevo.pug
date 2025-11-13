@@ -1,0 +1,56 @@
+extends ../layout
+
+block content
+  - var page = 'empleados'
+
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-user-plus.text-success.me-3
+        | Nuevo Empleado
+
+  .row
+    .col-lg-6
+      .card
+        .card-body
+          form#empleadoForm(action="/empleados/nuevo", method="POST")
+            .mb-3
+              label.form-label(for="nombre") Nombre
+              input.form-control(type="text", id="nombre", name="nombre", required)
+            .mb-3
+              label.form-label(for="apellido") Apellido
+              input.form-control(type="text", id="apellido", name="apellido", required)
+            .mb-3
+              label.form-label(for="email") Email
+              input.form-control(type="email", id="email", name="email", required)
+            .mb-3
+              label.form-label(for="telefono") Teléfono
+              input.form-control(type="text", id="telefono", name="telefono")
+            .mb-3
+              label.form-label(for="rol") Rol
+              select.form-control(id="rol", name="rol", required)
+                option(value="") Seleccione un rol
+                option(value="administrador") Administrador
+                option(value="cocinero") Cocinero
+                option(value="repartidor") Repartidor
+                option(value="mozo") Mozo
+                option(value="encargado_stock") Encargado Stock
+            .mb-3
+              label.form-label(for="area") Área
+              select.form-control(id="area", name="area", required)
+                option(value="") Seleccione un área
+                option(value="cocina") Cocina
+                option(value="reparto") Reparto
+                option(value="salon") Salón
+                option(value="inventario") Inventario
+                option(value="administracion") Administración
+            .mb-3
+              label.form-label(for="fechaIngreso") Fecha de Ingreso
+              input.form-control(type="date", id="fechaIngreso", name="fechaIngreso", required, value=new Date().toISOString().split('T')[0])
+            .d-grid
+              button.btn.btn-success(type="submit")
+                i.fas.fa-save.me-2
+                | Crear Empleado
+      a.btn.btn-outline-secondary.mt-3(href="/empleados")
+        i.fas.fa-arrow-left.me-2
+        | Volver

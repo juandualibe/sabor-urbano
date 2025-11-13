@@ -1,0 +1,390 @@
+{
+  "pedidos": [
+    {
+      "id": 1,
+      "numeroOrden": "MESA-01",
+      "items": [
+        {
+          "id": 1,
+          "producto": "Hamburguesa simple con queso",
+          "precio": 5000,
+          "cantidad": 1
+        }
+      ],
+      "total": 5000,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "entregado",
+      "fechaCreacion": "2025-09-19T12:05:00.000Z",
+      "tiempoEstimado": "20",
+      "observaciones": "Mesa cerca de la ventana",
+      "itemsText": "1 x Hamburguesa simple con queso",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 2,
+      "numeroOrden": "RAPPI-4521",
+      "items": [
+        {
+          "id": 2,
+          "producto": "Hamburguesa triple con cheddar",
+          "precio": 9500,
+          "cantidad": 1
+        },
+        {
+          "id": 3,
+          "producto": "Papas fritas",
+          "precio": 2500,
+          "cantidad": 1
+        },
+        {
+          "id": 4,
+          "producto": "Ensalada César",
+          "precio": 8000,
+          "cantidad": 1
+        }
+      ],
+      "total": 20000,
+      "tipo": "delivery",
+      "plataforma": "propia",
+      "estado": "en_preparacion",
+      "fechaCreacion": "2025-09-19T12:20:00.000Z",
+      "tiempoEstimado": "35",
+      "observaciones": "Sin pepinillos",
+      "itemsText": "1 x Hamburguesa triple con cheddar, 1 x Papas fritas, 1 x Ensalada César",
+      "nombreCliente": "Diego Suárez",
+      "telefonoCliente": "11-3344-5566",
+      "direccionCliente": "Avenida Rivadavia 1960"
+    },
+    {
+      "id": 3,
+      "numeroOrden": "MESA-04",
+      "items": [
+        {
+          "id": 1,
+          "producto": "Hamburguesa simple con queso",
+          "precio": 5000,
+          "cantidad": 1
+        },
+        {
+          "id": 2,
+          "producto": "Hamburguesa triple con cheddar",
+          "precio": 9500,
+          "cantidad": 1
+        }
+      ],
+      "total": 14500,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "finalizado",
+      "fechaCreacion": "2025-09-19T12:40:00.000Z",
+      "tiempoEstimado": 15,
+      "observaciones": "",
+      "itemsText": "1 x Hamburguesa simple con queso, 1 x Hamburguesa triple con cheddar",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 4,
+      "numeroOrden": "PEDIDOSYA-889",
+      "items": [
+        {
+          "id": 11,
+          "producto": "Milanesa napolitana con papas fritas",
+          "precio": 9500,
+          "cantidad": 1
+        }
+      ],
+      "total": 9500,
+      "tipo": "delivery",
+      "plataforma": "pedidosya",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-19T13:05:00.000Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "itemsText": "1 x Milanesa napolitana con papas fritas",
+      "nombreCliente": "Tomás Giménez",
+      "telefonoCliente": "11-5566-7788",
+      "direccionCliente": "Moreno 1263"
+    },
+    {
+      "id": 5,
+      "numeroOrden": "RAPPI-4522",
+      "items": [
+        {
+          "id": 3,
+          "producto": "Papas fritas",
+          "precio": 2500,
+          "cantidad": 1
+        }
+      ],
+      "total": 2500,
+      "tipo": "delivery",
+      "plataforma": "rappi",
+      "estado": "en_camino",
+      "fechaCreacion": "2025-09-19T13:15:00.000Z",
+      "tiempoEstimado": 40,
+      "observaciones": "Timbre roto, llamar",
+      "itemsText": "1 x Papas fritas",
+      "nombreCliente": "Pedro Morales",
+      "telefonoCliente": "11-6677-8899",
+      "direccionCliente": "Alsina 2306"
+    },
+    {
+      "id": 6,
+      "numeroOrden": "LOCAL-CAJA-15",
+      "items": [
+        {
+          "id": 4,
+          "producto": "Ensalada César",
+          "precio": 8000,
+          "cantidad": 1
+        },
+        {
+          "id": 5,
+          "producto": "Wrap de Pollo",
+          "precio": 8000,
+          "cantidad": 1
+        }
+      ],
+      "total": 16000,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "listo",
+      "fechaCreacion": "2025-09-19T13:25:00.000Z",
+      "tiempoEstimado": 10,
+      "observaciones": "",
+      "itemsText": "1 x Ensalada César, 1 x Wrap de Pollo",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 7,
+      "numeroOrden": "PROPIA-DELIV-01",
+      "items": [
+        {
+          "id": 7,
+          "producto": "Aros de cebolla",
+          "precio": 3000,
+          "cantidad": 1
+        },
+        {
+          "id": 8,
+          "producto": "Pizza muzzarella grande",
+          "precio": 9000,
+          "cantidad": 1
+        },
+        {
+          "id": 21,
+          "producto": "Café con leche",
+          "precio": 2000,
+          "cantidad": 1
+        }
+      ],
+      "total": 14000,
+      "tipo": "delivery",
+      "plataforma": "propia",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-19T13:35:00.000Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "itemsText": "1 x Aros de cebolla, 1 x Pizza muzzarella grande, 1 x Café con leche",
+      "nombreCliente": "Rocío Rodríguez",
+      "telefonoCliente": "11-7788-1199",
+      "direccionCliente": "Riobamba 352"
+    },
+    {
+      "id": 8,
+      "numeroOrden": "ORD-008",
+      "items": [
+        {
+          "id": 2,
+          "producto": "Hamburguesa triple con cheddar",
+          "precio": 9500,
+          "cantidad": 1
+        },
+        {
+          "id": 3,
+          "producto": "Papas fritas",
+          "precio": 2500,
+          "cantidad": 1
+        }
+      ],
+      "total": 12000,
+      "tipo": "delivery",
+      "plataforma": "pedidosya",
+      "estado": "en_preparacion",
+      "fechaCreacion": "2025-09-20T03:11:45.620Z",
+      "tiempoEstimado": "30",
+      "observaciones": "",
+      "itemsText": "1 x Hamburguesa triple con cheddar, 1 x Papas fritas",
+      "nombreCliente": "María Gómez",
+      "telefonoCliente": "11-1122-3344",
+      "direccionCliente": "Triunvirato 1210"
+    },
+    {
+      "id": 9,
+      "numeroOrden": "ORD-009",
+      "items": [
+        {
+          "id": 8,
+          "producto": "Pizza muzzarella grande",
+          "precio": 9000,
+          "cantidad": 1
+        },
+        {
+          "id": 9,
+          "producto": "Pizza napolitana grande",
+          "precio": 8500,
+          "cantidad": 1
+        }
+      ],
+      "total": 17500,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-20T14:03:59.136Z",
+      "tiempoEstimado": "30",
+      "observaciones": "",
+      "itemsText": "1 x Pizza muzzarella grande, 1 x Pizza napolitana grande",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 10,
+      "numeroOrden": "ORD-010",
+      "items": [
+        {
+          "id": 8,
+          "producto": "Pizza muzzarella grande",
+          "precio": 9000,
+          "cantidad": 1
+        },
+        {
+          "id": 9,
+          "producto": "Pizza napolitana grande",
+          "precio": 8500,
+          "cantidad": 1
+        }
+      ],
+      "total": 17500,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "en_preparacion",
+      "fechaCreacion": "2025-09-20T15:12:51.787Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "cliente": null,
+      "itemsText": "1 x Pizza muzzarella grande, 1 x Pizza napolitana grande",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 11,
+      "numeroOrden": "ORD-011",
+      "items": [
+        {
+          "id": 15,
+          "producto": "Empanada de queso y cebolla",
+          "precio": 1500,
+          "cantidad": 1
+        },
+        {
+          "id": 19,
+          "producto": "Sprite 500ml",
+          "precio": 1500,
+          "cantidad": 1
+        }
+      ],
+      "total": 3000,
+      "tipo": "delivery",
+      "plataforma": "rappi",
+      "estado": "en_preparacion",
+      "fechaCreacion": "2025-09-20T15:17:16.527Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "itemsText": "1 x Empanada de queso y cebolla, 1 x Sprite 500ml",
+      "nombreCliente": "Camila Sánchez",
+      "telefonoCliente": "1123456789",
+      "direccionCliente": "Montes de Oca 3245"
+    },
+    {
+      "id": 12,
+      "numeroOrden": "ORD-012",
+      "items": [
+        {
+          "id": 1,
+          "producto": "Hamburguesa simple con queso",
+          "precio": 5000,
+          "cantidad": 1
+        }
+      ],
+      "total": 5000,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-21T21:03:31.004Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 13,
+      "numeroOrden": "ORD-013",
+      "items": [
+        {
+          "id": 1,
+          "producto": "Hamburguesa simple con queso",
+          "precio": 5000,
+          "cantidad": 1
+        }
+      ],
+      "total": 5000,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-21T21:05:04.435Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    },
+    {
+      "id": 14,
+      "numeroOrden": "ORD-014",
+      "items": [
+        {
+          "id": 4,
+          "producto": "Ensalada César",
+          "precio": 8000,
+          "cantidad": 1
+        },
+        {
+          "id": 8,
+          "producto": "Pizza muzzarella grande",
+          "precio": 9000,
+          "cantidad": 1
+        }
+      ],
+      "total": 17000,
+      "tipo": "presencial",
+      "plataforma": "local",
+      "estado": "pendiente",
+      "fechaCreacion": "2025-09-21T21:17:07.368Z",
+      "tiempoEstimado": 30,
+      "observaciones": "",
+      "nombreCliente": null,
+      "telefonoCliente": null,
+      "direccionCliente": null
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "insumos": [
+    {
+      "id": 1,
+      "nombre": "Harina 000",
+      "categoria": "alimentos",
+      "stock": 25,
+      "stockMinimo": 10,
+      "unidadMedida": "kg",
+      "proveedor": "Molinos Río",
+      "ultimaActualizacion": "2025-09-01T10:15:00.000Z",
+      "estado": "disponible"
+    },
+    {
+      "id": 2,
+      "nombre": "Queso Mozzarella",
+      "categoria": "alimentos",
+      "stock": 6,
+      "stockMinimo": 8,
+      "unidadMedida": "kg",
+      "proveedor": "Lácteos Norte",
+      "ultimaActualizacion": "2025-09-02T12:00:00.000Z",
+      "estado": "bajo_stock"
+    },
+    {
+      "id": 3,
+      "nombre": "Cerveza Rubia",
+      "categoria": "bebidas",
+      "stock": 0,
+      "stockMinimo": 5,
+      "unidadMedida": "unidades",
+      "proveedor": "Distribuidora Sur",
+      "ultimaActualizacion": "2025-09-05T18:30:00.000Z",
+      "estado": "sin_stock"
+    },
+    {
+      "id": 4,
+      "nombre": "Tomate Perita",
+      "categoria": "alimentos",
+      "stock": 12,
+      "stockMinimo": 10,
+      "unidadMedida": "kg",
+      "proveedor": "Huerta Viva",
+      "ultimaActualizacion": "2025-09-10T09:05:00.000Z",
+      "estado": "disponible"
+    },
+    {
+      "id": 5,
+      "nombre": "Detergente Cocina",
+      "categoria": "limpieza",
+      "stock": 3,
+      "stockMinimo": 5,
+      "unidadMedida": "litros",
+      "proveedor": "LimpioMax",
+      "ultimaActualizacion": "2025-09-12T14:11:00.000Z",
+      "estado": "bajo_stock"
+    },
+    {
+      "id": 6,
+      "nombre": "Bandejas de Cartón",
+      "categoria": "utensilios",
+      "stock": 80,
+      "stockMinimo": 30,
+      "unidadMedida": "unidades",
+      "proveedor": "PackFlex",
+      "ultimaActualizacion": "2025-09-15T16:44:00.000Z",
+      "estado": "disponible"
+    }
+  ]
+}

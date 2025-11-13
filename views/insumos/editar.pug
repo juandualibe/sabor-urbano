@@ -1,0 +1,220 @@
+extends ../layout
+
+block content
+  - var page = 'insumos'
+  
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-edit.text-warning.me-3
+        | Editar Insumo
+
+  .row
+    .col-lg-6
+      .card
+        .card-body
+          if insumo
+            - const insumoId = insumo && insumo._id ? insumo._id.toString() : ''
+            form#insumoForm(action=`/api/insumos/${insumoId}`, method="POST", data-insumo-id=insumoId)
+              input(type="hidden", name="_method", value="PUT")
+              
+              .mb-3
+                label.form-label(for="nombre") Nombre
+                input.form-control#nombre(
+                  type="text", 
+                  name="nombre", 
+                  value=insumo.nombre, 
+                  list="insumosSuggestions",
+                  autocomplete="off",
+                  placeholder="Escribe para buscar insumos existentes...",
+                  required
+                )
+                datalist#insumosSuggestions
+                small.form-text.text-muted Comienza a escribir para ver sugerencias
+                
+              .mb-3
+                label.form-label(for="categoria") Categoría
+                select.form-control(id="categoria", name="categoria", required)
+                  option(value="alimentos", selected=insumo.categoria === 'alimentos') Alimentos
+                  option(value="bebidas", selected=insumo.categoria === 'bebidas') Bebidas
+                  option(value="limpieza", selected=insumo.categoria === 'limpieza') Limpieza
+                  option(value="utensilios", selected=insumo.categoria === 'utensilios') Utensilios
+                  option(value="otros", selected=insumo.categoria === 'otros') Otros
+                  
+              .mb-3
+                label.form-label(for="stock") Stock
+                input.form-control(type="number", id="stock", name="stock", value=insumo.stock, required)
+                
+              .mb-3
+                label.form-label(for="stockMinimo") Stock Mínimo
+                input.form-control(type="number", id="stockMinimo", name="stockMinimo", value=insumo.stockMinimo, required)
+                
+              .mb-3
+                label.form-label(for="unidadMedida") Unidad de Medida
+                select.form-control#unidadMedida(name="unidadMedida")
+                  option(value="", disabled, selected=!insumo.unidadMedida) Seleccione una unidad
+                  option(value="kg", selected=(insumo.unidadMedida === 'kg')) Kilogramos (kg)
+                  option(value="g", selected=(insumo.unidadMedida === 'g')) Gramos (g)
+                  option(value="litros", selected=(insumo.unidadMedida === 'litros')) Litros (L)
+                  option(value="ml", selected=(insumo.unidadMedida === 'ml')) Mililitros (ml)
+                  option(value="unidades", selected=(insumo.unidadMedida === 'unidades')) Unidades
+                  
+              .mb-3
+                label.form-label(for="precioUnitario") Precio Unitario ($)
+                input.form-control(
+                  type="number", 
+                  id="precioUnitario", 
+                  name="precioUnitario", 
+                  min="0",
+                  step="0.01",
+                  value=insumo.precioUnitario || 0
+                )
+                small.form-text.text-muted Precio de compra por unidad de medida
+                  
+              .mb-3
+                label.form-label(for="proveedor") Proveedor
+                input.form-control#proveedor(
+                  type="text", 
+                  name="proveedor", 
+                  value=insumo.proveedor || '', 
+                  list="proveedoresSuggestions",
+                  autocomplete="off",
+                  placeholder="Escribe para buscar proveedores..."
+                )
+                datalist#proveedoresSuggestions
+                small.form-text.text-muted Comienza a escribir para ver proveedores registrados
+                
+              .d-grid
+                button.btn.btn-warning(type="submit")
+                  i.fas.fa-save.me-2
+                  | Actualizar Insumo
+          else
+            .alert.alert-danger
+              i.fas.fa-exclamation-triangle.me-2
+              | Insumo no encontrado
+              
+      a.btn.btn-outline-secondary.mt-3(href="/insumos")
+        i.fas.fa-arrow-left.me-2
+        | Volver
+        
+  script.
+    (function() {
+      const nombreInput = document.getElementById('nombre');
+      const proveedorInput = document.getElementById('proveedor');
+      const insumosList = document.getElementById('insumosSuggestions');
+      const proveedoresList = document.getElementById('proveedoresSuggestions');
+      const form = document.getElementById('insumoForm');
+
+      if (!form) return;
+
+      const insumoId = form.dataset.insumoId || '';
+
+      // Función para buscar insumos
+      async function buscarInsumos(query) {
+        if (query.length < 1) {
+          insumosList.innerHTML = '';
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/api/insumos/buscar?q=${encodeURIComponent(query)}`);
+          const data = await response.json();
+          
+          insumosList.innerHTML = '';
+          
+          data.forEach(insumo => {
+            const option = document.createElement('option');
+            option.value = insumo.nombre;
+            insumosList.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error al buscar insumos:', error);
+        }
+      }
+
+      // Función para buscar proveedores
+      async function buscarProveedores(query) {
+        if (query.length < 1) {
+          proveedoresList.innerHTML = '';
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/api/insumos/proveedores?q=${encodeURIComponent(query)}`);
+          const data = await response.json();
+          
+          proveedoresList.innerHTML = '';
+          
+          data.forEach(proveedor => {
+            const option = document.createElement('option');
+            option.value = proveedor;
+            proveedoresList.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error al buscar proveedores:', error);
+        }
+      }
+
+      // Debounce para nombre de insumo
+      let timeoutNombre;
+      nombreInput.addEventListener('input', (e) => {
+        clearTimeout(timeoutNombre);
+        timeoutNombre = setTimeout(() => {
+          buscarInsumos(e.target.value);
+        }, 300);
+      });
+
+      // Debounce para proveedor
+      let timeoutProveedor;
+      proveedorInput.addEventListener('input', (e) => {
+        clearTimeout(timeoutProveedor);
+        timeoutProveedor = setTimeout(() => {
+          buscarProveedores(e.target.value);
+        }, 300);
+      });
+
+      // Manejar submit del formulario
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+
+        delete data._method;
+
+        if (data.stock !== undefined) {
+          data.stock = Number(data.stock);
+          if (Number.isNaN(data.stock)) {
+            alert('Stock debe ser un número válido.');
+            return;
+          }
+        }
+
+        if (data.stockMinimo !== undefined) {
+          data.stockMinimo = Number(data.stockMinimo);
+          if (Number.isNaN(data.stockMinimo)) {
+            alert('Stock mínimo debe ser un número válido.');
+            return;
+          }
+        }
+
+        if (!data.unidadMedida) delete data.unidadMedida;
+        if (!data.proveedor) delete data.proveedor;
+
+        try {
+          const response = await fetch(`/api/insumos/${insumoId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (result.success) {
+            alert('Insumo actualizado exitosamente');
+            window.location.href = '/insumos';
+          } else {
+            alert(`Error: ${result.message}`);
+          }
+        } catch (error) {
+          alert('Error al actualizar el insumo');
+        }
+      });
+    })();

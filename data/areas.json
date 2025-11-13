@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "nombre": "cocina",
+    "descripcion": "Preparación de alimentos",
+    "responsabilidades": ["Cocción", "Platos especiales", "Presentación"],
+    "empleados_permitidos": ["cocinero", "administrador"],
+    "activa": true
+  },
+  {
+    "id": 2,
+    "nombre": "reparto",
+    "descripcion": "Logística de delivery",
+    "responsabilidades": ["Retiro de pedidos", "Rutas", "Confirmación de entrega"],
+    "empleados_permitidos": ["repartidor", "administrador"],
+    "activa": true
+  },
+  {
+    "id": 3,
+    "nombre": "salon",
+    "descripcion": "Atención al cliente en mesas",
+    "responsabilidades": ["Toma de pedidos", "Servicio", "Cierre de mesa"],
+    "empleados_permitidos": ["mozo", "administrador"],
+    "activa": true
+  },
+  {
+    "id": 4,
+    "nombre": "inventario",
+    "descripcion": "Gestión de insumos",
+    "responsabilidades": ["Ingreso de stock", "Control", "Alertas"],
+    "empleados_permitidos": ["encargado_stock", "administrador"],
+    "activa": true
+  },
+  {
+    "id": 5,
+    "nombre": "administracion",
+    "descripcion": "Gestión general",
+    "responsabilidades": ["Supervisión", "Estadísticas", "Criterios operativos"],
+    "empleados_permitidos": ["administrador"],
+    "activa": true
+  }
+]

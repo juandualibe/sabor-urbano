@@ -1,0 +1,74 @@
+{
+  "empleados": [
+    {
+      "id": 1,
+      "nombre": "Mariana",
+      "apellido": "Paz",
+      "email": "mariana.paz@saborurbano.com",
+      "telefono": "11-6000-1001",
+      "rol": "administrador",
+      "area": "administracion",
+      "fechaIngreso": "2024-02-09"
+    },
+    {
+      "id": 2,
+      "nombre": "Julián",
+      "apellido": "Torres",
+      "email": "julian.torres@saborurbano.com",
+      "telefono": "11-6000-1002",
+      "rol": "cocinero",
+      "area": "cocina",
+      "fechaIngreso": "2024-06-01"
+    },
+    {
+      "id": 3,
+      "nombre": "Rocío",
+      "apellido": "Silva",
+      "email": "rocio.silva@saborurbano.com",
+      "telefono": "11-6000-1003",
+      "rol": "mozo",
+      "area": "salon",
+      "fechaIngreso": "2024-08-15"
+    },
+    {
+      "id": 4,
+      "nombre": "Tomás",
+      "apellido": "Aguirre",
+      "email": "tomas.aguirre@saborurbano.com",
+      "telefono": "11-6000-1004",
+      "rol": "repartidor",
+      "area": "reparto",
+      "fechaIngreso": "2025-01-05"
+    },
+    {
+      "id": 5,
+      "nombre": "Elena",
+      "apellido": "Martel",
+      "email": "elena.martel@saborurbano.com",
+      "telefono": "11-6000-1005",
+      "rol": "encargado_stock",
+      "area": "inventario",
+      "fechaIngreso": "2025-03-20"
+    },
+    {
+      "id": 6,
+      "nombre": "Pedro",
+      "apellido": "Romero",
+      "email": "pedro.romero@saborurbano.com",
+      "telefono": "11-6000-1006",
+      "rol": "cocinero",
+      "area": "cocina",
+      "fechaIngreso": "2025-05-12"
+    },
+    {
+      "id": 7,
+      "nombre": "Juan",
+      "apellido": "Dualibe",
+      "email": "juandualibe@gmail.com",
+      "telefono": "3513197708",
+      "rol": "encargado_stock",
+      "area": "inventario",
+      "fechaIngreso": "2025-09-20"
+    }
+  ]
+}

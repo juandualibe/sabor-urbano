@@ -1,0 +1,107 @@
+extends ../layout
+
+block content
+  - var page = 'tareas'
+  
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-plus.text-primary.me-3
+        | Nueva Tarea
+
+  .row
+    .col-lg-6
+      .card
+        .card-body
+          //- El form ahora apunta a la API y se manejará con JS
+          form#tareaForm 
+            .mb-3
+              label.form-label(for="titulo") Título
+              input.form-control(type="text", id="titulo", name="titulo", required)
+            .mb-3
+              label.form-label(for="descripcion") Descripción
+              textarea.form-control(id="descripcion", name="descripcion", rows="4")
+            .mb-3
+              label.form-label(for="area") Área
+              select.form-control(id="area", name="area", required)
+                option(value="") Seleccione un área
+                option(value="gestion_pedidos") Gestión Pedidos
+                option(value="control_inventario") Control Inventario
+            .mb-3
+              label.form-label(for="estado") Estado
+              select.form-control(id="estado", name="estado")
+                option(value="pendiente" selected) Pendiente
+                option(value="en_proceso") En Proceso
+                option(value="finalizada") Finalizada
+            .mb-3
+              label.form-label(for="prioridad") Prioridad
+              select.form-control(id="prioridad", name="prioridad")
+                option(value="media" selected) Media
+                option(value="alta") Alta
+                option(value="baja") Baja
+            .mb-3
+              label.form-label(for="empleadoAsignado") Empleado Asignado
+              select.form-control(id="empleadoAsignado", name="empleadoAsignado")
+                option(value="") Sin asignar
+                if empleados
+                  each emp in empleados
+                    option(value=emp._id) #{emp.nombre} #{emp.apellido}
+            
+            //- Select para Pedido Asociado
+            .mb-3
+              label.form-label(for="pedidoAsociado") Pedido Asociado
+              select.form-control(id="pedidoAsociado", name="pedidoAsociado")
+                option(value="") Sin asignar
+                if pedidos
+                  each ped in pedidos
+                    - var clienteNombre = ped.cliente && ped.cliente.nombre ? ped.cliente.nombre : 'Presencial'
+                    //- El value es el _id, el texto es lo que ve el usuario
+                    option(value=ped._id) Pedido ##{ped.numeroOrden || 'N/A'} - #{clienteNombre}
+            
+            .mb-3
+              label.form-label(for="observaciones") Observaciones
+              textarea.form-control(id="observaciones", name="observaciones", rows="4")
+            .d-grid
+              button.btn.btn-primary(type="submit")
+                i.fas.fa-save.me-2
+                | Crear Tarea
+          a.btn.btn-outline-secondary.mt-3(href="/tareas")
+            i.fas.fa-arrow-left.me-2
+            | Volver
+            
+  //- Script para enviar el formulario a la API
+  script.
+    document.getElementById('tareaForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      
+      // Limpiar valores vacíos para que se guarden como null o se omitan
+      if (!data.empleadoAsignado) data.empleadoAsignado = null; 
+      if (!data.pedidoAsociado) data.pedidoAsociado = null; 
+      if (!data.descripcion) data.descripcion = '';
+      if (!data.observaciones) data.observaciones = '';
+
+      console.log('Enviando datos a /api/tareas:', data); // Debug
+
+      try {
+        const response = await fetch('/api/tareas', { // Apunta a la ruta API POST
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        
+        console.log('Respuesta de /api/tareas:', result); // Debug
+
+        if (response.ok && result.success) {
+          alert('Tarea creada exitosamente');
+          window.location.href = '/tareas'; // Redirige a la lista de tareas
+        } else {
+          alert(`Error al crear tarea: ${result.message || 'Error desconocido'}`);
+        }
+      } catch (error) {
+        console.error('Error en fetch:', error);
+        alert('Error de conexión al crear la tarea.');
+      }
+    });

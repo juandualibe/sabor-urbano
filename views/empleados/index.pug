@@ -1,0 +1,93 @@
+extends ../layout
+
+block content
+  - var page = 'empleados'
+
+  .row.mb-4
+    .col-12
+      .d-flex.justify-content-between.align-items-center
+        h1.display-6
+          i.fas.fa-users.text-success.me-3
+          | Gestión de Empleados
+        a.btn.btn-success(href="/empleados/nuevo")
+          i.fas.fa-user-plus.me-2
+          | Nuevo Empleado
+
+  if empleados && empleados.length > 0
+    .row
+      .col-12
+        .card
+          .card-header.bg-dark.text-white
+            h5.mb-0
+              i.fas.fa-users.me-2
+              | Lista de Empleados (#{empleados.length})
+          .card-body.p-0
+            .table-responsive
+              table.table.table-hover.mb-0
+                thead.table-light
+                  tr
+                    th ID
+                    th Empleado
+                    th Email / Teléfono
+                    th Rol
+                    th Área
+                    th Fecha Ingreso
+                    th Acciones
+                tbody
+                  each emp in empleados
+                    tr
+                      td= emp._id
+                      td
+                        strong #{emp.nombre} #{emp.apellido}
+                      td
+                        div
+                          i.fas.fa-envelope.me-1
+                          small= emp.email
+                        div
+                          i.fas.fa-phone.me-1
+                          small= emp.telefono || 'Sin teléfono'
+                      td
+                        - var rolClass = emp.rol === 'administrador' ? 'bg-danger' : emp.rol === 'cocinero' ? 'bg-primary' : emp.rol === 'repartidor' ? 'bg-warning' : emp.rol === 'mozo' ? 'bg-info' : 'bg-secondary'
+                        span.badge(class=rolClass)= emp.rol
+                      td
+                        - var areaClass = emp.area === 'cocina' ? 'bg-primary' : emp.area === 'reparto' ? 'bg-warning' : emp.area === 'salon' ? 'bg-info' : emp.area === 'inventario' ? 'bg-success' : 'bg-dark'
+                        span.badge(class=areaClass)= emp.area
+                      td
+                        small= new Date(emp.fechaIngreso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                      td
+                        .btn-group(role="group")
+                          a.btn.btn-sm.btn-outline-primary(href=`/api/empleados/${emp._id}`, target="_blank", title="Ver")
+                            i.fas.fa-eye
+                          a.btn.btn-sm.btn-outline-warning(href=`/empleados/editar/${emp._id}`, title="Editar")
+                            i.fas.fa-edit
+                          button.btn.btn-sm.btn-outline-danger(data-id=emp._id, onclick="eliminarEmpleado(this)", title="Eliminar")
+                            i.fas.fa-trash
+    script.
+      async function eliminarEmpleado(button) {
+        if (confirm('¿Estás seguro de eliminar este empleado?')) {
+          const id = button.getAttribute('data-id');
+          try {
+            const response = await fetch(`/api/empleados/${id}`, { method: 'DELETE' });
+            const result = await response.json();
+            if (result.success) {
+              alert('Empleado eliminado exitosamente');
+              location.reload();
+            } else {
+              alert(`Error: ${result.message}`);
+            }
+          } catch (error) {
+            alert('Error al eliminar el empleado');
+          }
+        }
+      }
+  else
+    .row
+      .col-12
+        .card
+          .card-body.text-center.py-5
+            i.fas.fa-users.text-muted.mb-3(style="font-size: 4rem;")
+            h4.text-muted No hay empleados registrados
+            p.text-muted Registra el primer empleado para comenzar
+            a.btn.btn-success(href="/empleados/nuevo")
+              i.fas.fa-user-plus.me-2
+              | Registrar Primer Empleado

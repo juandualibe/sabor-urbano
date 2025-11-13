@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .row.justify-content-center
+    .col-lg-6
+      .card.text-center
+        .card-body.py-5
+          if code === 404
+            i.fas.fa-search.text-muted.mb-4(style="font-size: 5rem;")
+            h1.display-4.text-muted 404
+            h4.mb-3 Página no encontrada
+          else
+            i.fas.fa-exclamation-triangle.text-danger.mb-4(style="font-size: 5rem;")
+            h1.display-4.text-danger #{code || 500}
+            h4.mb-3 Error del servidor
+          
+          p.text-muted.mb-4= error
+          
+          .d-grid.gap-2.d-md-flex.justify-content-md-center
+            a.btn.btn-primary(href="/tareas")
+              i.fas.fa-home.me-2
+              | Volver al inicio

@@ -1,0 +1,243 @@
+extends ../layout
+
+block content
+  - var page = 'pedidos'
+
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-shopping-bag.text-success.me-3
+        | Nuevo Pedido
+
+  //- Mantenemos el formulario SIN action/method porque lo maneja JS
+  form#pedidoForm
+    // ------------------- TIPO DE PEDIDO -------------------
+    .form-group.mb-3
+      label(for="tipo") Tipo de Pedido
+      select#tipo.form-control(name="tipo" required)
+        option(value="presencial" selected) Presencial
+        option(value="delivery") Delivery
+
+    // ------------------- PLATAFORMA -------------------
+    .form-group.mb-3
+      label(for="plataforma") Plataforma
+      select#plataforma.form-control(name="plataforma" required)
+        option(value="propia") Propia
+        option(value="rappi") Rappi
+        option(value="pedidosya") PedidosYa
+        option(value="local") Local
+
+    // ------------------- CAMPOS DE CLIENTE -------------------
+    div#deliveryFields(style="display:none;")
+      .form-group.mb-3
+        label(for="nombreCliente") Nombre Cliente
+        //- Aseguramos name="nombreCliente"
+        input.form-control(type="text" name="nombreCliente") 
+      .form-group.mb-3
+        label(for="telefonoCliente") Teléfono Cliente
+        //- Aseguramos name="telefonoCliente"
+        input.form-control(type="text" name="telefonoCliente")
+      .form-group.mb-3
+        label(for="direccionCliente") Dirección Cliente
+        //- Aseguramos name="direccionCliente"
+        input.form-control(type="text" name="direccionCliente")
+
+    // ------------------- ITEMS DEL PEDIDO -------------------
+    .form-group.mb-3
+      label Items del Pedido
+      //- SOLUCIÓN (1/3): Usar producto._id consistentemente en data-id
+      each producto in productos
+        .mb-2.d-flex.align-items-center
+          input.form-check-input.item-checkbox(type="checkbox" data-id=producto._id data-precio=producto.precio id=`producto-${producto._id}`)
+          //- Usamos un ID de HTML único también
+          label.form-check-label.ms-2(for=`producto-${producto._id}`) #{producto.nombre} - $#{producto.precio}
+          input.form-control.item-cantidad.ms-2(type="number" min="1" value="1" data-id=producto._id style="width:80px;" disabled)
+
+    // ------------------- TOTAL -------------------
+    .form-group.mb-3
+      label(for="total") Total
+      input#total.form-control(type="number" name="total" readonly)
+
+    button.btn.btn-success(type="submit") Crear Pedido
+
+  // ------------------- SCRIPT CORREGIDO -------------------
+  script.
+    const pedidoForm = document.getElementById('pedidoForm');
+    const tipoSelect = document.getElementById('tipo');
+    const plataformaSelect = document.getElementById('plataforma');
+    const deliveryFields = document.getElementById('deliveryFields');
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    // const cantidades = document.querySelectorAll('.item-cantidad'); // No necesitamos esta lista global
+    const totalInput = document.getElementById('total');
+
+    // --- Lógica UI (sin cambios) ---
+    function actualizarFormulario() {
+      const tipo = tipoSelect.value;
+      const opciones = plataformaSelect.options;
+      for (let i = 0; i < opciones.length; i++) {
+        const opcion = opciones[i];
+        if (tipo === 'presencial') {
+          opcion.disabled = opcion.value !== 'local';
+          if (opcion.value === 'local') opcion.selected = true;
+        } else {
+          opcion.disabled = opcion.value === 'local';
+          // Si estaba 'local' seleccionado y cambiamos a delivery, seleccionamos 'propia' por defecto si está disponible
+          if (plataformaSelect.value === 'local' && opcion.value === 'propia' && !opcion.disabled) {
+             opcion.selected = true;
+          } else if (!plataformaSelect.querySelector('option:checked:not([disabled])')) {
+             // Si ninguna opción válida está seleccionada, seleccionar la primera disponible
+             const primeraOpcionValida = plataformaSelect.querySelector('option:not([disabled])');
+             if(primeraOpcionValida) primeraOpcionValida.selected = true;
+          }
+        }
+      }
+      deliveryFields.style.display = tipo === 'delivery' ? 'block' : 'none';
+    }
+    tipoSelect.addEventListener('change', actualizarFormulario);
+    actualizarFormulario(); // Llamada inicial
+
+    // --- Cálculo de Total (sin cambios) ---
+    function calcularTotal() {
+      let total = 0;
+      checkboxes.forEach(cb => {
+        const id = cb.dataset.id; // Ya usa _id por la corrección en Pug
+        // SOLUCIÓN (2/3): Buscamos el input de cantidad DENTRO de esta función
+        const cantidadInput = document.querySelector(`.item-cantidad[data-id="${id}"]`); 
+        // Verificación importante
+        if (cb.checked && cantidadInput) { 
+          const cantidad = parseInt(cantidadInput.value) || 1;
+          const precio = parseFloat(cb.dataset.precio);
+           if(!isNaN(precio) && !isNaN(cantidad)) { // Asegurar que ambos son números
+               total += cantidad * precio;
+           }
+        }
+      });
+      totalInput.value = total.toFixed(2); // Usar toFixed(2) para mostrar decimales
+    }
+
+    // --- Event Listeners para Checkboxes y Cantidades ---
+    checkboxes.forEach(cb => {
+      const id = cb.dataset.id; // Ya usa _id
+      // Buscamos el input correspondiente UNA VEZ aquí
+      const cantidadInput = document.querySelector(`.item-cantidad[data-id="${id}"]`); 
+      
+      // Verificamos si encontramos el input de cantidad
+      if (!cantidadInput) {
+          console.error(`Error: No se encontró input de cantidad para producto ID: ${id}`);
+          return; // Saltar este checkbox si no tiene input de cantidad asociado
+      }
+
+      cb.addEventListener('change', () => {
+        cantidadInput.disabled = !cb.checked;
+        if (!cb.checked) {
+            cantidadInput.value = 1; // Resetear a 1 si se desmarca
+        }
+        calcularTotal(); // Recalcular total al cambiar checkbox
+      });
+
+      // Añadimos listener al input de cantidad encontrado
+      cantidadInput.addEventListener('input', calcularTotal); 
+    });
+
+    calcularTotal(); // Llamada inicial para el total
+
+    // --- SUBMIT ---
+    pedidoForm.addEventListener('submit', async e => {
+      e.preventDefault(); 
+      console.log('[nuevo.pug] Evento submit detectado.'); 
+
+      const items = {};
+      let itemsValidos = false; // Flag para saber si se seleccionó al menos uno válido
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          const id = cb.dataset.id; // Ya usa _id
+          // SOLUCIÓN (3/3): Buscamos el input aquí y verificamos
+          const cantidadInput = document.querySelector(`.item-cantidad[data-id="${id}"]`); 
+          if (cantidadInput) {
+            const cantidad = parseInt(cantidadInput.value) || 1;
+             // Validar cantidad mínima
+            if (cantidad < 1) {
+                alert(`La cantidad para el producto seleccionado debe ser al menos 1.`);
+                // Podríamos enfocar el input: cantidadInput.focus();
+                throw new Error("Cantidad inválida detectada."); // Detener el submit si hay error
+            }
+            items[id] = { seleccionado: true, cantidad }; 
+            itemsValidos = true; // Marcamos que encontramos al menos un item válido
+          } else {
+             console.error(`[Submit] No se encontró input de cantidad para producto ID ${id} seleccionado.`);
+             // Considerar mostrar un error al usuario aquí también
+          }
+        }
+      });
+
+      console.log('[nuevo.pug] Objeto items construido:', JSON.stringify(items, null, 2));
+
+      // Validamos si se construyó algún item válido
+      if (!itemsValidos) { 
+        alert('Debe seleccionar al menos un producto.');
+        console.log('[nuevo.pug] Validación fallida: No hay items válidos seleccionados.');
+        return;
+      }
+
+      // Obtenemos los demás datos del formulario
+      const data = {
+        tipo: tipoSelect.value,
+        plataforma: plataformaSelect.value, 
+        items,
+        nombreCliente: pedidoForm.nombreCliente?.value || '',
+        telefonoCliente: pedidoForm.telefonoCliente?.value || '', 
+        direccionCliente: pedidoForm.direccionCliente?.value || '',
+        // total: parseFloat(totalInput.value) // Enviamos total calculado por JS
+        // Es mejor que el backend lo recalcule por seguridad.
+      };
+       // Añadimos el total solo si es un número válido
+      const totalNum = parseFloat(totalInput.value);
+      if(!isNaN(totalNum)){
+          data.total = totalNum;
+      }
+
+
+      console.log('[nuevo.pug] Datos a enviar (fetch body):', JSON.stringify(data, null, 2));
+
+      try {
+        const url = '/pedidos/nuevo'; // Ruta correcta definida en app.js
+        console.log(`[nuevo.pug] Enviando FETCH POST a: ${url}`);
+        
+        const res = await fetch(url, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        console.log(`[nuevo.pug] Respuesta recibida: Status ${res.status}, OK: ${res.ok}`);
+
+        let result;
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            result = await res.json();
+            console.log('[nuevo.pug] Respuesta JSON del servidor:', result);
+        } else {
+            const textResponse = await res.text();
+            console.error('[nuevo.pug] La respuesta del servidor NO es JSON. Respuesta como texto:', textResponse);
+            // Mostramos el texto del error si es un error 500, o un mensaje genérico
+            alert(res.ok ? 'Respuesta inesperada del servidor.' : `Error ${res.status}: ${textResponse || 'Error del servidor. Revisa la consola.'}`);
+            return; // Detenemos
+        }
+
+        // Procesamos el resultado JSON
+        if (result && result.success === true) { // Comprobar explícitamente true
+          alert('Pedido creado exitosamente');
+          console.log('[nuevo.pug] Redirigiendo a /pedidos');
+          window.location.href = '/pedidos';
+        } else {
+          // Si success no es true, mostramos el mensaje del servidor o uno genérico
+          const errorMessage = result?.message || 'Error desconocido al crear el pedido.';
+          alert(`Error: ${errorMessage}`);
+          console.error(`[nuevo.pug] Error reportado por el backend: ${errorMessage}`);
+        }
+      } catch (err) {
+        // Capturar errores de red o errores lanzados intencionalmente (ej. cantidad inválida)
+        console.error('[nuevo.pug] Error en el bloque CATCH del fetch:', err.message);
+        alert(`Error al procesar la solicitud: ${err.message}. Revisa la consola del navegador (F12).`);
+      }
+    });

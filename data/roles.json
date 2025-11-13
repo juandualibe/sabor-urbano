@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "nombre": "administrador",
+    "descripcion": "Acceso total al sistema",
+    "permisos": ["crear", "leer", "actualizar", "eliminar"],
+    "nivel": "alto",
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "cocinero",
+    "descripcion": "Preparación de pedidos",
+    "permisos": ["leer", "actualizar"],
+    "nivel": "medio",
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "repartidor",
+    "descripcion": "Entrega de pedidos delivery",
+    "permisos": ["leer", "actualizar"],
+    "nivel": "medio",
+    "activo": true
+  },
+  {
+    "id": 4,
+    "nombre": "mozo",
+    "descripcion": "Atención en salón",
+    "permisos": ["leer", "actualizar"],
+    "nivel": "medio",
+    "activo": true
+  },
+  {
+    "id": 5,
+    "nombre": "encargado_stock",
+    "descripcion": "Gestión de inventario",
+    "permisos": ["leer", "actualizar", "gestionar_stock"],
+    "nivel": "medio",
+    "activo": true
+  }
+]

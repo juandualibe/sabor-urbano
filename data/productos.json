@@ -1,0 +1,130 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Hamburguesa simple con queso",
+      "precio": "5000",
+      "stock": true
+    },
+    {
+      "id": 2,
+      "nombre": "Hamburguesa triple con cheddar",
+      "precio": "9500",
+      "stock": true
+    },
+    {
+      "id": 3,
+      "nombre": "Papas fritas",
+      "precio": 2500,
+      "stock": true
+    },
+    {
+      "id": 4,
+      "nombre": "Ensalada César",
+      "precio": 8000,
+      "stock": true
+    },
+    {
+      "id": 5,
+      "nombre": "Wrap de Pollo",
+      "precio": 8000,
+      "stock": true
+    },
+    {
+      "id": 6,
+      "nombre": "Ensalada clásica",
+      "precio": 4000,
+      "stock": true
+    },
+    {
+      "id": 7,
+      "nombre": "Aros de cebolla",
+      "precio": 3000,
+      "stock": false
+    },
+    {
+      "id": 8,
+      "nombre": "Pizza muzzarella grande",
+      "precio": "9000",
+      "stock": true
+    },
+    {
+      "id": 9,
+      "nombre": "Pizza napolitana grande",
+      "precio": 8500,
+      "stock": true
+    },
+    {
+      "id": 10,
+      "nombre": "Milanesa con papas fritas",
+      "precio": 9000,
+      "stock": true
+    },
+    {
+      "id": 11,
+      "nombre": "Milanesa napolitana con papas fritas",
+      "precio": 9500,
+      "stock": true
+    },
+    {
+      "id": 12,
+      "nombre": "Empanada de carne",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 13,
+      "nombre": "Empanada de pollo",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 14,
+      "nombre": "Empanada de verdura",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 15,
+      "nombre": "Empanada de queso y cebolla",
+      "precio": 1500,
+      "stock": false
+    },
+    {
+      "id": 16,
+      "nombre": "Coca Cola 500ml",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 17,
+      "nombre": "Fanta 500ml",
+      "precio": 1500,
+      "stock": false
+    },
+    {
+      "id": 18,
+      "nombre": "Agua 500ml",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 19,
+      "nombre": "Sprite 500ml",
+      "precio": 1500,
+      "stock": true
+    },
+    {
+      "id": 20,
+      "nombre": "Agua saborizada",
+      "precio": "1500",
+      "stock": false
+    },
+    {
+      "id": 21,
+      "nombre": "Café con leche",
+      "precio": 2000,
+      "stock": false
+    }
+  ]
+}

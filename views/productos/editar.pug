@@ -1,0 +1,448 @@
+extends ../layout
+
+block content
+  - var page = 'productos'
+ 
+  .row.mb-4
+    .col-12
+      h1.display-6
+        i.fas.fa-edit.text-warning.me-3
+        | Editar Producto
+
+  if producto
+    .row
+      .col-12
+        .card.shadow
+          .card-body
+            form#productoForm(data-producto-id=producto._id)
+              //- Nombre del producto
+              .mb-4
+                label.form-label(for="nombre") 🍕 Nombre del Producto
+                input.form-control.form-control-lg(
+                  type="text", 
+                  id="nombre", 
+                  name="nombre", 
+                  placeholder="Ej: Pizza Margarita",
+                  value=producto.nombre,
+                  required
+                )
+
+              //- Ingredientes
+              .mb-4
+                label.form-label 🥗 Ingredientes
+                #ingredientesList
+                  //- Los ingredientes se cargarán aquí dinámicamente
+                  
+                button#agregarIngrediente.btn.btn-outline-primary.btn-sm.mt-2(type="button")
+                  i.fas.fa-plus.me-2
+                  | Agregar Ingrediente
+
+              //- Costos y Precio
+              .row
+                .col-md-6
+                  .mb-4
+                    label.form-label 💰 Costo Total
+                    h3.text-primary#costoTotal $0.00
+                    small.text-muted Calculado automáticamente
+
+                .col-md-6
+                  .mb-4
+                    label.form-label(for="margenGanancia") Margen de Ganancia
+                    .input-group
+                      input.form-control(
+                        type="number", 
+                        id="margenGanancia", 
+                        name="margenGanancia", 
+                        min="0",
+                        step="1",
+                        placeholder="100",
+                        value=producto.margenGanancia || 0,
+                        required
+                      )
+                      span.input-group-text %
+                    small.text-muted Porcentaje que se agrega al costo
+
+              .mb-4
+                label.form-label(for="precioVenta") 💵 Precio de Venta Final
+                .input-group.input-group-lg
+                  span.input-group-text $
+                  input.form-control(
+                    type="number", 
+                    id="precioVenta", 
+                    name="precioVenta", 
+                    min="0",
+                    step="0.01",
+                    value=producto.precioVenta || 0,
+                    placeholder="Calculado automáticamente",
+                    required
+                  )
+                small.text-muted#precioInfo Precio sugerido: $0 (puede modificarse manualmente)
+
+              //- Stock
+              .mb-4
+                label.form-label 📦 Disponibilidad de Stock
+                #stockInfo.alert.alert-info
+                  i.fas.fa-info-circle.me-2
+                  | Calculando disponibilidad...
+
+              .d-grid.gap-2
+                button.btn.btn-warning.btn-lg(type="submit")
+                  i.fas.fa-save.me-2
+                  | Actualizar Producto
+                  
+    a.btn.btn-outline-secondary.mt-3(href="/productos")
+      i.fas.fa-arrow-left.me-2
+      | Volver
+
+  else
+    .alert.alert-danger
+      i.fas.fa-exclamation-triangle.me-2
+      | Producto no encontrado
+    a.btn.btn-outline-secondary.mt-3(href="/productos")
+      i.fas.fa-arrow-left.me-2
+      | Volver
+
+  script.
+    if (typeof window !== 'undefined' && document.getElementById('productoForm')) {
+      const productoData = !{JSON.stringify(producto || {})};
+      
+      (function() {
+        const form = document.getElementById('productoForm');
+        const ingredientesList = document.getElementById('ingredientesList');
+        const agregarBtn = document.getElementById('agregarIngrediente');
+        const costoTotalEl = document.getElementById('costoTotal');
+        const margenInput = document.getElementById('margenGanancia');
+        const precioVentaInput = document.getElementById('precioVenta');
+        const precioInfoEl = document.getElementById('precioInfo');
+        const stockInfoEl = document.getElementById('stockInfo');
+        const productoId = form ? form.dataset.productoId : null;
+        
+        let ingredientes = [];
+        let insumosDisponibles = [];
+        let ingredienteIdCounter = 0;
+
+        // [COPIAR TODAS LAS FUNCIONES DE nuevo.pug aquí...]
+        // Por brevedad, voy a referenciar que uses el mismo código de nuevo.pug
+        // Solo cambiaré la inicialización y el submit
+        
+        async function cargarInsumos() {
+          try {
+            const response = await fetch('/api/productos/insumos-disponibles');
+            insumosDisponibles = await response.json();
+          } catch (error) {
+            console.error('Error al cargar insumos:', error);
+            alert('Error al cargar insumos disponibles');
+          }
+        }
+
+        function agregarIngrediente(insumoId = '', cantidad = 1, unidadMedida = '') {
+          const id = ingredienteIdCounter++;
+          const ingredienteDiv = document.createElement('div');
+          ingredienteDiv.className = 'ingrediente-item mb-3 p-3 border rounded';
+          ingredienteDiv.dataset.id = id;
+
+          ingredienteDiv.innerHTML = `
+            <div class="row align-items-end">
+              <div class="col-md-4">
+                <label class="form-label">Insumo</label>
+                <select class="form-control insumo-select" data-id="${id}" required>
+                  <option value="">Seleccione un insumo...</option>
+                  ${insumosDisponibles.map(ins => 
+                    `<option value="${ins._id}" 
+                      ${ins._id === insumoId ? 'selected' : ''}
+                      data-precio="${ins.precioUnitario}" 
+                      data-unidad="${ins.unidadMedida}"
+                      data-stock="${ins.stock}">
+                      ${ins.nombre} (${ins.stock} ${ins.unidadMedida})
+                    </option>`
+                  ).join('')}
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Cantidad</label>
+                <input type="number" class="form-control cantidad-input" data-id="${id}" 
+                  min="0.01" step="0.01" value="${cantidad}" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Unidad</label>
+                <select class="form-control unidad-select" data-id="${id}" required>
+                  <option value="">Seleccione...</option>
+                </select>
+              </div>
+              <div class="col-md-1">
+                <label class="form-label d-none d-md-block">&nbsp;</label>
+                <small class="text-muted stock-display d-block">Stock: 0</small>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label d-none d-md-block">&nbsp;</label>
+                <button type="button" class="btn btn-danger btn-sm w-100 eliminar-ingrediente" data-id="${id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-12">
+                <small class="text-muted costo-ingrediente">Costo: $0</small>
+              </div>
+            </div>
+          `;
+
+          ingredientesList.appendChild(ingredienteDiv);
+
+          const selectInsumo = ingredienteDiv.querySelector('.insumo-select');
+          const selectUnidad = ingredienteDiv.querySelector('.unidad-select');
+          const inputCantidad = ingredienteDiv.querySelector('.cantidad-input');
+          const btnEliminar = ingredienteDiv.querySelector('.eliminar-ingrediente');
+
+          selectInsumo.addEventListener('change', () => {
+            actualizarUnidadesDisponibles(id);
+            actualizarIngrediente(id);
+          });
+          selectUnidad.addEventListener('change', () => actualizarIngrediente(id));
+          inputCantidad.addEventListener('input', () => actualizarIngrediente(id));
+          btnEliminar.addEventListener('click', () => eliminarIngrediente(id));
+
+          // Si hay una unidad preseleccionada, configurarla
+          if (unidadMedida) {
+            setTimeout(() => {
+              actualizarUnidadesDisponibles(id);
+              selectUnidad.value = unidadMedida;
+              actualizarIngrediente(id);
+            }, 100);
+          } else {
+            actualizarIngrediente(id);
+          }
+        }
+
+        function obtenerUnidadesCompatibles(unidadBase) {
+          const unidades = {
+            'kg': [
+              { value: 'kg', label: 'Kilogramos (kg)', factor: 1 },
+              { value: 'g', label: 'Gramos (g)', factor: 1000 }
+            ],
+            'g': [
+              { value: 'kg', label: 'Kilogramos (kg)', factor: 0.001 },
+              { value: 'g', label: 'Gramos (g)', factor: 1 }
+            ],
+            'litros': [
+              { value: 'litros', label: 'Litros (L)', factor: 1 },
+              { value: 'ml', label: 'Mililitros (ml)', factor: 1000 }
+            ],
+            'ml': [
+              { value: 'litros', label: 'Litros (L)', factor: 0.001 },
+              { value: 'ml', label: 'Mililitros (ml)', factor: 1 }
+            ],
+            'unidades': [
+              { value: 'unidades', label: 'Unidades (u)', factor: 1 }
+            ]
+          };
+          
+          return unidades[unidadBase] || [{ value: unidadBase, label: unidadBase, factor: 1 }];
+        }
+
+        function actualizarUnidadesDisponibles(id) {
+          const div = document.querySelector(`.ingrediente-item[data-id="${id}"]`);
+          if (!div) return;
+
+          const selectInsumo = div.querySelector('.insumo-select');
+          const selectUnidad = div.querySelector('.unidad-select');
+          const selectedOption = selectInsumo.options[selectInsumo.selectedIndex];
+          const unidadBase = selectedOption.dataset.unidad || '';
+          const unidadActual = selectUnidad.value;
+
+          selectUnidad.innerHTML = '<option value="">Seleccione...</option>';
+
+          if (unidadBase) {
+            const unidadesCompatibles = obtenerUnidadesCompatibles(unidadBase);
+            unidadesCompatibles.forEach(unidad => {
+              const option = document.createElement('option');
+              option.value = unidad.value;
+              option.textContent = unidad.label;
+              option.dataset.factor = unidad.factor;
+              option.dataset.unidadBase = unidadBase;
+              selectUnidad.appendChild(option);
+            });
+
+            selectUnidad.value = unidadActual || unidadBase;
+          }
+        }
+
+        function actualizarIngrediente(id) {
+          const div = document.querySelector(`.ingrediente-item[data-id="${id}"]`);
+          if (!div) return;
+
+          const selectInsumo = div.querySelector('.insumo-select');
+          const selectUnidad = div.querySelector('.unidad-select');
+          const inputCantidad = div.querySelector('.cantidad-input');
+          const stockDisplay = div.querySelector('.stock-display');
+          const costoDisplay = div.querySelector('.costo-ingrediente');
+
+          const selectedOption = selectInsumo.options[selectInsumo.selectedIndex];
+          const insumoId = selectInsumo.value;
+          const cantidad = parseFloat(inputCantidad.value) || 0;
+          const precioUnitario = parseFloat(selectedOption.dataset.precio) || 0;
+          const unidadBase = selectedOption.dataset.unidad || '';
+          const stockBase = parseFloat(selectedOption.dataset.stock) || 0;
+          
+          const unidadSeleccionada = selectUnidad.value || unidadBase;
+          const selectedUnidadOption = selectUnidad.options[selectUnidad.selectedIndex];
+          const factorConversion = parseFloat(selectedUnidadOption?.dataset.factor) || 1;
+          const stockEnUnidadSeleccionada = stockBase * factorConversion;
+
+          if (stockDisplay) {
+            stockDisplay.textContent = `Stock: ${stockEnUnidadSeleccionada.toFixed(2)} ${unidadSeleccionada}`;
+          }
+
+          const cantidadEnUnidadBase = cantidad / factorConversion;
+          const costoIngrediente = cantidadEnUnidadBase * precioUnitario;
+          costoDisplay.textContent = `Costo: $${costoIngrediente.toFixed(2)} | Stock disponible: ${stockEnUnidadSeleccionada.toFixed(2)} ${unidadSeleccionada}`;
+
+          const index = ingredientes.findIndex(i => i.id === id);
+          if (index >= 0) {
+            ingredientes[index] = { 
+              id, insumoId, cantidad, unidadMedida: unidadSeleccionada,
+              precioUnitario, unidadBase, stockDisponible: stockEnUnidadSeleccionada,
+              factorConversion, costoIngrediente
+            };
+          } else {
+            ingredientes.push({ 
+              id, insumoId, cantidad, unidadMedida: unidadSeleccionada,
+              precioUnitario, unidadBase, stockDisponible: stockEnUnidadSeleccionada,
+              factorConversion, costoIngrediente
+            });
+          }
+
+          recalcularTotales();
+        }
+
+        function eliminarIngrediente(id) {
+          const div = document.querySelector(`.ingrediente-item[data-id="${id}"]`);
+          if (div) div.remove();
+          ingredientes = ingredientes.filter(i => i.id !== id);
+          recalcularTotales();
+        }
+
+        function recalcularTotales() {
+          const ingredientesValidos = ingredientes.filter(ing => ing.insumoId && ing.cantidad > 0);
+          const costoTotal = ingredientesValidos.reduce((sum, ing) => sum + (ing.costoIngrediente || 0), 0);
+
+          costoTotalEl.textContent = `$${costoTotal.toFixed(2)}`;
+
+          const margen = parseFloat(margenInput.value) || 0;
+          const precioSugerido = costoTotal + (costoTotal * margen / 100);
+
+          if (!precioVentaInput.value || parseFloat(precioVentaInput.value) === 0) {
+            precioVentaInput.value = precioSugerido.toFixed(2);
+          }
+
+          precioInfoEl.textContent = `Precio sugerido: $${precioSugerido.toFixed(2)} (Costo: $${costoTotal.toFixed(2)} + ${margen}% margen)`;
+          calcularStockDisponible();
+        }
+
+        function calcularStockDisponible() {
+          const ingredientesValidos = ingredientes.filter(ing => ing.insumoId && ing.cantidad > 0 && ing.unidadMedida);
+          
+          if (ingredientesValidos.length === 0) {
+            stockInfoEl.className = 'alert alert-info';
+            stockInfoEl.innerHTML = '<i class="fas fa-info-circle me-2"></i>Seleccione los insumos para calcular disponibilidad';
+            return;
+          }
+
+          const stocksPorIngrediente = ingredientesValidos.map(ing => Math.floor(ing.stockDisponible / ing.cantidad));
+          const stockMinimo = Math.min(...stocksPorIngrediente);
+
+          if (stockMinimo > 10) {
+            stockInfoEl.className = 'alert alert-success';
+            stockInfoEl.innerHTML = `<i class="fas fa-check-circle me-2"></i>✅ Disponible - Puedes preparar hasta ${stockMinimo} unidades`;
+          } else if (stockMinimo > 0) {
+            stockInfoEl.className = 'alert alert-warning';
+            stockInfoEl.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>⚠️ Stock bajo - Solo puedes preparar ${stockMinimo} unidades`;
+          } else {
+            stockInfoEl.className = 'alert alert-danger';
+            stockInfoEl.innerHTML = `<i class="fas fa-times-circle me-2"></i>❌ Sin stock - Faltan insumos`;
+          }
+        }
+
+        agregarBtn.addEventListener('click', () => agregarIngrediente());
+        margenInput.addEventListener('input', recalcularTotales);
+        precioVentaInput.addEventListener('input', () => {
+          const precioVenta = parseFloat(precioVentaInput.value) || 0;
+          const ingredientesValidos = ingredientes.filter(ing => ing.insumoId && ing.cantidad > 0);
+          const costoTotal = ingredientesValidos.reduce((sum, ing) => sum + (ing.costoIngrediente || 0), 0);
+          
+          if (precioVenta < costoTotal) {
+            precioVentaInput.classList.add('is-invalid');
+          } else {
+            precioVentaInput.classList.remove('is-invalid');
+          }
+        });
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const nombre = document.getElementById('nombre').value;
+          const margenGanancia = parseFloat(margenInput.value) || 0;
+          const precioVenta = parseFloat(precioVentaInput.value) || 0;
+          const ingredientesValidos = ingredientes.filter(ing => ing.insumoId && ing.cantidad > 0);
+
+          if (ingredientesValidos.length === 0) {
+            alert('Debe agregar al menos un ingrediente válido');
+            return;
+          }
+
+          const costoTotal = ingredientesValidos.reduce((sum, ing) => sum + (ing.costoIngrediente || 0), 0);
+          
+          if (precioVenta < costoTotal) {
+            alert(`El precio de venta ($${precioVenta}) no puede ser menor al costo ($${costoTotal.toFixed(2)})`);
+            return;
+          }
+
+          const ingredientesParaEnviar = ingredientesValidos.map(ing => ({
+            insumoId: ing.insumoId,
+            cantidad: ing.cantidad,
+            unidadMedida: ing.unidadMedida
+          }));
+
+          const data = { nombre, ingredientes: ingredientesParaEnviar, margenGanancia, precioVenta };
+
+          console.log('Actualizando producto:', data);
+
+          try {
+            const response = await fetch(`/api/productos/${productoId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            console.log('Respuesta del servidor:', result);
+
+            if (result.success) {
+              alert('Producto actualizado exitosamente');
+              window.location.href = '/productos';
+            } else {
+              alert(`Error: ${result.message}`);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('Error al actualizar el producto');
+          }
+        });
+
+        // Inicializar
+        cargarInsumos().then(() => {
+          // Cargar ingredientes existentes
+          if (productoData.ingredientes && productoData.ingredientes.length > 0) {
+            productoData.ingredientes.forEach(ing => {
+              agregarIngrediente(
+                ing.insumo?._id || ing.insumo,
+                ing.cantidad,
+                ing.unidadMedida
+              );
+            });
+          } else {
+            agregarIngrediente(); // Agregar uno vacío si no hay ingredientes
+          }
+        });
+      })();
+    }
