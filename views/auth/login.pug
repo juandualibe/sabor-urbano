@@ -1,0 +1,23 @@
+extends ../layout
+
+block content
+  .row.justify-content-center.mt-5
+    .col-md-4
+      .card
+        .card-body
+          h3.card-title.text-center
+            i.fas.fa-utensils.text-primary.me-2
+            |  Sabor Urbano - Login
+          
+          form(action="/login", method="POST")
+            .mb-3
+              label.form-label(for="username") Nombre de Usuario
+              input.form-control(type="text", id="username", name="username", required)
+            .mb-3
+              label.form-label(for="password") Contraseña
+              input.form-control(type="password", id="password", name="password", required)
+            .d-grid
+              button.btn.btn-primary(type="submit") Iniciar Sesión
+          
+          .text-center.mt-3
+            a(href="/register") ¿No tienes cuenta? Regístrate

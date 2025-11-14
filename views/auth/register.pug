@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  .row.justify-content-center.mt-5
+    .col-md-4
+      .card
+        .card-body
+          h3.card-title.text-center
+            | Registro de Nuevo Usuario
+          
+          form(action="/register", method="POST")
+            .mb-3
+              label.form-label(for="nombre") Nombre
+              input.form-control(type="text", id="nombre", name="nombre", required)
+            .mb-3
+              label.form-label(for="apellido") Apellido
+              input.form-control(type="text", id="apellido", name="apellido", required)
+            .mb-3
+              label.form-label(for="username") Nombre de Usuario
+              input.form-control(type="text", id="username", name="username", required)
+            .mb-3
+              label.form-label(for="email") Email
+              input.form-control(type="email", id="email", name="email", required)
+            .mb-3
+              label.form-label(for="password") Contraseña
+              input.form-control(type="password", id="password", name="password", required)
+            .d-grid
+              button.btn.btn-success(type="submit") Registrarse
+
+          .text-center.mt-3
+            a(href="/login") ¿Ya tienes cuenta? Inicia Sesión

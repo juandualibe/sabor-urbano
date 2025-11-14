@@ -32,42 +32,69 @@ html(lang="es")
         button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav")
           span.navbar-toggler-icon
         .collapse.navbar-collapse#navbarNav
+          
+          // --- MENÚ DE NAVEGACIÓN (IZQUIERDA) ---
           ul.navbar-nav.me-auto
-            li.nav-item
-              a.nav-link(href="/tareas", class= page === 'tareas' ? 'active' : '')
-                i.fas.fa-tasks.me-1
-                | Tareas
-            li.nav-item
-              a.nav-link(href="/empleados", class= page === 'empleados' ? 'active' : '')
-                i.fas.fa-users.me-1
-                | Empleados
-            li.nav-item
-              a.nav-link(href="/pedidos", class= page === 'pedidos' ? 'active' : '')
-                i.fas.fa-shopping-bag.me-1
-                | Pedidos
-            li.nav-item
-              a.nav-link(href="/insumos", class= page === 'insumos' ? 'active' : '')
-                i.fas.fa-boxes.me-1
-                | Insumos
-            li.nav-item
-              a.nav-link(href="/productos", class= page === 'productos' ? 'active' : '')
-                i.fas.fa-utensils.me-1
-                | Productos
-            li.nav-item
-              a.nav-link(href="/filtros", class= page === 'filtros' ? 'active' : '')
-                i.fas.fa-filter.me-1
-                | Filtros
-
+            // Solo mostramos los links si está autenticado
+            if isAuthenticated
+              li.nav-item
+                a.nav-link(href="/tareas", class= page === 'tareas' ? 'active' : '')
+                  i.fas.fa-tasks.me-1
+                  | Tareas
+              li.nav-item
+                a.nav-link(href="/empleados", class= page === 'empleados' ? 'active' : '')
+                  i.fas.fa-users.me-1
+                  | Empleados
+              li.nav-item
+                a.nav-link(href="/pedidos", class= page === 'pedidos' ? 'active' : '')
+                  i.fas.fa-shopping-bag.me-1
+                  | Pedidos
+              li.nav-item
+                a.nav-link(href="/insumos", class= page === 'insumos' ? 'active' : '')
+                  i.fas.fa-boxes.me-1
+                  | Insumos
+              li.nav-item
+                a.nav-link(href="/productos", class= page === 'productos' ? 'active' : '')
+                  i.fas.fa-utensils.me-1
+                  | Productos
+              li.nav-item
+                a.nav-link(href="/filtros", class= page === 'filtros' ? 'active' : '')
+                  i.fas.fa-filter.me-1
+                  | Filtros
+          
+          // --- BOTÓN DE LOGOUT (DERECHA) ---
+          if isAuthenticated
+            ul.navbar-nav.ms-auto // ms-auto lo empuja a la derecha
+              li.nav-item
+                // Mostramos el nombre del usuario logueado
+                span.navbar-text.me-3
+                  i.fas.fa-user-check.me-1
+                  | Hola, #{user.nombre || user.username}
+              li.nav-item
+                // El link apunta a la ruta /logout
+                a.btn.btn-outline-warning.btn-sm(href="/logout")
+                  i.fas.fa-sign-out-alt.me-1
+                  | Cerrar Sesión
+          
     .container-fluid
       .row
-        .col-12.main-content.p-4
-          if error
-            .alert.alert-danger.alert-dismissible.fade.show
-              i.fas.fa-exclamation-triangle.me-2
-              strong Error: 
-              | #{error}
-              button.btn-close(type="button", data-bs-dismiss="alert")
-          
-          block content
+        // Mostramos el contenido solo si está autenticado
+        // O si la página es 'login' o 'register'
+        if isAuthenticated || page === 'login' || page === 'register'
+          .col-12.main-content.p-4
+            if error
+              .alert.alert-danger.alert-dismissible.fade.show
+                i.fas.fa-exclamation-triangle.me-2
+                strong Error: 
+                | #{error}
+                button.btn-close(type="button", data-bs-dismiss="alert")
+            
+            block content
+            
+        else
+          // (Seguridad extra, aunque app.js ya redirige)
+          .col-12.main-content.p-4
+            .alert.alert-danger No estás autorizado.
+            a(href="/login") Ir al Login
 
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js")
