@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  - var page = 'login' // <-- 1. Se define la variable 'page'
+  - var page = 'login'
 
   .row.justify-content-center.mt-5
     .col-md-4
@@ -16,14 +16,14 @@ block content
               label.form-label(for="username") Nombre de Usuario
               input.form-control(type="text", id="username", name="username", required)
             
-            // --- 2. MODIFICACIÓN PARA EL BOTÓN ---
+            
             .mb-3
               label.form-label(for="password") Contraseña
               .input-group
                 input.form-control(type="password", id="password", name="password", required)
                 button.btn.btn-outline-secondary(type="button", id="togglePassword")
                   i.fas.fa-eye(id="toggleIcon")
-            // --- FIN DE LA MODIFICACIÓN ---
+            
 
             .d-grid
               button.btn.btn-primary(type="submit") Iniciar Sesión
@@ -31,7 +31,7 @@ block content
           .text-center.mt-3
             a(href="/register") ¿No tienes cuenta? Regístrate
 
-  // --- 3. SCRIPT (AHORA DENTRO DE BLOCK CONTENT) ---
+  
   script.
     document.addEventListener('DOMContentLoaded', () => {
       const toggleButton = document.getElementById('togglePassword');

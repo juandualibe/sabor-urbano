@@ -33,9 +33,9 @@ html(lang="es")
           span.navbar-toggler-icon
         .collapse.navbar-collapse#navbarNav
           
-          // --- MENÚ DE NAVEGACIÓN (IZQUIERDA) ---
+         
           ul.navbar-nav.me-auto
-            // Solo mostramos los links si está autenticado
+            
             if isAuthenticated
               li.nav-item
                 a.nav-link(href="/tareas", class= page === 'tareas' ? 'active' : '')
@@ -62,16 +62,16 @@ html(lang="es")
                   i.fas.fa-filter.me-1
                   | Filtros
           
-          // --- BOTÓN DE LOGOUT (DERECHA) ---
+          
           if isAuthenticated
-            ul.navbar-nav.ms-auto // ms-auto lo empuja a la derecha
+            ul.navbar-nav.ms-auto 
               li.nav-item
-                // Mostramos el nombre del usuario logueado
+                
                 span.navbar-text.me-3
                   i.fas.fa-user-check.me-1
                   | Hola, #{user.nombre || user.username}
               li.nav-item
-                // El link apunta a la ruta /logout
+                
                 a.btn.btn-outline-warning.btn-sm(href="/logout")
                   i.fas.fa-sign-out-alt.me-1
                   | Cerrar Sesión
@@ -92,7 +92,7 @@ html(lang="es")
             block content
             
         else
-          // (Seguridad extra, aunque app.js ya redirige)
+          
           .col-12.main-content.p-4
             .alert.alert-danger No estás autorizado.
             a(href="/login") Ir al Login

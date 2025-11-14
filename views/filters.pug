@@ -52,7 +52,7 @@ block content
                     - var clienteNombre = ped.cliente && ped.cliente.nombre ? ped.cliente.nombre : 'Presencial'
                     option(value=ped._id, selected=String(filtrosForm.pedidoAsociado) === String(ped._id)) Pedido ##{ped.numeroOrden || 'N/A'} - #{clienteNombre}
 
-            // --- FILTROS NUEVOS AÑADIDOS ---
+            
                         
             .mb-3
               label.form-label(for="tipoPedido") Tipo de Pedido
@@ -69,7 +69,7 @@ block content
                 option(value="pedidosya", selected=filtrosForm.plataforma === 'pedidosya') PedidosYa
                 option(value="propia", selected=filtrosForm.plataforma === 'propia') Propia
                 option(value="local", selected=filtrosForm.plataforma === 'local') Local
-            // --- FIN DE FILTROS NUEVOS ---
+            
 
             .mb-3
               label.form-label(for="fechaDesde") Fecha Desde
