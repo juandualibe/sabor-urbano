@@ -1,6 +1,8 @@
 extends ../layout
 
 block content
+  - var page = 'login' // <-- 1. Se define la variable 'page'
+
   .row.justify-content-center.mt-5
     .col-md-4
       .card
@@ -13,11 +15,41 @@ block content
             .mb-3
               label.form-label(for="username") Nombre de Usuario
               input.form-control(type="text", id="username", name="username", required)
+            
+            // --- 2. MODIFICACIÓN PARA EL BOTÓN ---
             .mb-3
               label.form-label(for="password") Contraseña
-              input.form-control(type="password", id="password", name="password", required)
+              .input-group
+                input.form-control(type="password", id="password", name="password", required)
+                button.btn.btn-outline-secondary(type="button", id="togglePassword")
+                  i.fas.fa-eye(id="toggleIcon")
+            // --- FIN DE LA MODIFICACIÓN ---
+
             .d-grid
               button.btn.btn-primary(type="submit") Iniciar Sesión
           
           .text-center.mt-3
             a(href="/register") ¿No tienes cuenta? Regístrate
+
+  // --- 3. SCRIPT (AHORA DENTRO DE BLOCK CONTENT) ---
+  script.
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleButton = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      const icon = document.getElementById('toggleIcon');
+
+      if (toggleButton && passwordInput && icon) {
+        toggleButton.addEventListener('click', () => {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          if (type === 'password') {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          }
+        });
+      }
+    });
