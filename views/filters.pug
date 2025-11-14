@@ -43,9 +43,8 @@ block content
                   each emp in empleados
                     option(value=emp._id, selected=String(filtrosForm.empleadoAsignado) === String(emp._id)) #{emp.nombre} #{emp.apellido}
             
-            // Filtro de Pedido Asociado
             .mb-3
-              label.form-label(for="pedidoAsociado") Pedido Asociado
+              label.form-label(for="pedidoAsociado") Pedido Específico
               select.form-control(id="pedidoAsociado", name="pedidoAsociado")
                 option(value="", selected=!filtrosForm.pedidoAsociado) Todos
                 if pedidos
@@ -53,23 +52,37 @@ block content
                     - var clienteNombre = ped.cliente && ped.cliente.nombre ? ped.cliente.nombre : 'Presencial'
                     option(value=ped._id, selected=String(filtrosForm.pedidoAsociado) === String(ped._id)) Pedido ##{ped.numeroOrden || 'N/A'} - #{clienteNombre}
 
-            // Otros filtros (Ajustar si son necesarios para Tareas)
-            //- .mb-3
-            //-   label.form-label(for="tipoPedido") Tipo de Pedido (Filtro de Ejemplo)
-            //-   select.form-control(id="tipoPedido", name="tipoPedido") ...
-            //- .mb-3
-            //-   label.form-label(for="plataforma") Plataforma (Filtro de Ejemplo)
-            //-   select.form-control(id="plataforma", name="plataforma") ...
+            // --- FILTROS NUEVOS AÑADIDOS ---
+                        
+            .mb-3
+              label.form-label(for="tipoPedido") Tipo de Pedido
+              select.form-control(id="tipoPedido", name="tipoPedido")
+                option(value="", selected=!filtrosForm.tipoPedido) Todos
+                option(value="presencial", selected=filtrosForm.tipoPedido === 'presencial') Presencial
+                option(value="delivery", selected=filtrosForm.tipoPedido === 'delivery') Delivery
+
+            .mb-3
+              label.form-label(for="plataforma") Plataforma
+              select.form-control(id="plataforma", name="plataforma")
+                option(value="", selected=!filtrosForm.plataforma) Todos
+                option(value="rappi", selected=filtrosForm.plataforma === 'rappi') Rappi
+                option(value="pedidosya", selected=filtrosForm.plataforma === 'pedidosya') PedidosYa
+                option(value="propia", selected=filtrosForm.plataforma === 'propia') Propia
+                option(value="local", selected=filtrosForm.plataforma === 'local') Local
+            // --- FIN DE FILTROS NUEVOS ---
+
             .mb-3
               label.form-label(for="fechaDesde") Fecha Desde
               input.form-control(type="date", id="fechaDesde", name="fechaDesde", value=filtrosForm.fechaDesde || '')
             .mb-3
               label.form-label(for="fechaHasta") Fecha Hasta
               input.form-control(type="date", id="fechaHasta", name="fechaHasta", value=filtrosForm.fechaHasta || '')
+              
             .d-grid
               button.btn.btn-info(type="submit")
                 i.fas.fa-filter.me-2
                 | Aplicar Filtros
-          a.btn.btn-outline-secondary.mt-3(href="/tareas")
-            i.fas.fa-arrow-left.me-2
-            | Volver
+                
+            a.btn.btn-outline-secondary.mt-3(href="/tareas")
+              i.fas.fa-arrow-left.me-2
+              | Volver
