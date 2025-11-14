@@ -44,7 +44,7 @@ block content
                     option(value=emp._id, selected=String(filtrosForm.empleadoAsignado) === String(emp._id)) #{emp.nombre} #{emp.apellido}
             
             .mb-3
-              label.form-label(for="pedidoAsociado") Pedido Específico
+              label.form-label(for="pedidoAsociado") Pedido Asociado
               select.form-control(id="pedidoAsociado", name="pedidoAsociado")
                 option(value="", selected=!filtrosForm.pedidoAsociado) Todos
                 if pedidos
