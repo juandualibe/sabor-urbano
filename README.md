@@ -1,17 +1,13 @@
 # Sabor Urbano - Sistema de Gestión Backend
-![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)
-![Express.js](https://img.shields.io/badge/Express.js-4.18.2-blue.svg)
-![Pug](https://img.shields.io/badge/Pug-3.0.2-orange.svg)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5.1.3-purple.svg)
 
-Sistema de gestión integral para el restaurante "Sabor Urbano", desarrollado con Node.js, Express y Programación Orientada a Objetos (ES6 modules). Esta versión (v2.0) introduce una arquitectura robusta de seguridad y autenticación, separando lógicamente el acceso al sistema de la gestión operativa. Incluye una API REST protegida, interfaces web responsivas con manejo de sesiones y control de acceso basado en roles.
+Sistema de gestión integral para el restaurante "Sabor Urbano", desarrollado con Node.js, Express y Programación Orientada a Objetos (ES6 modules). Incluye una API REST completa para operaciones CRUD, sistemas de autenticación/autorización (JWT y Sesión), interfaces web responsivas con Pug para gestión visual, y filtros avanzados para tareas. Resuelve la unificación de pedidos (presenciales y delivery) y el control de inventario, con relaciones explícitas entre modelos: Cliente-Pedido, Tarea-Pedido y Tarea-Empleado.
 
 ## Tabla de Contenidos
 
 - [Características](#características)
 - [Arquitectura](#arquitectura)
 - [Instalación](#instalación)
-- [Uso y Autenticación](#uso-y-autenticación)
+- [Uso](#uso)
 - [API Endpoints](#api-endpoints)
 - [Interfaces Web](#interfaces-web)
 - [Testing](#testing)
@@ -25,86 +21,103 @@ Sistema de gestión integral para el restaurante "Sabor Urbano", desarrollado co
 
 ## Características
 
-### Seguridad y Autenticación (Nuevo)
-
-- **Sistema de Login y Registro**: Implementación de Passport.js con estrategia Local.
-- **Manejo de Sesiones**: Uso de express-session para mantener la persistencia del usuario en el navegador, protegiendo todas las vistas administrativas mediante middleware (`isLoggedIn`, `isLoggedOut`).
-- **Hashing de Contraseñas**: Encriptación segura de contraseñas utilizando bcryptjs antes de guardarlas en la base de datos.
-- **API Tokenizada (JWT)**: Capacidad para autenticar clientes externos (Apps móviles, Postman) mediante JSON Web Tokens, permitiendo comunicación stateless.
-- **Separación de Responsabilidades (Arquitectura)**: Se refactorizó el modelo de datos para desacoplar la entidad de acceso (Usuario) de la entidad operativa (Empleado).
-- **Mejoras de UI**: Visualizadores de contraseña (mostrar/ocultar) en formularios y barra de navegación dinámica que muestra opciones y botón de "Cerrar Sesión" solo a usuarios autenticados.
-
 ### Funcionalidades Principales
 
+- **Autenticación y Autorización (NUEVO)**: Implementado sistema de Registro y Login de usuarios.
+  - Las Vistas Web utilizan Passport Local Strategy para login basado en Express Session.
+  - La API REST está configurada para emitir JWT (JSON Web Token) y utiliza middlewares de protección (aunque las rutas de API en el app.js actual usan la protección de sesión para simplificar el frontend).
+  - Todas las rutas de gestión interna (`/tareas`, `/empleados`, etc.) están ahora protegidas y requieren un usuario autenticado.
+
 - **Gestión de Tareas**: Control de actividades por áreas (gestión de pedidos, control de inventario). Soporta estados (pendiente, en proceso, finalizada), prioridades (alta, media, baja), asignación a empleados y asociación opcional con pedidos mediante referencias Mongoose.
+
 - **Gestión de Empleados**: Registro, edición y eliminación con roles (administrador, cocinero, repartidor, mozo, encargado_stock) y áreas (cocina, reparto, salón, inventario, administración).
+
 - **Gestión de Pedidos**: Unifica pedidos presenciales y delivery (plataformas: Rappi, PedidosYa, propia, local). Cálculo automático de total y número de orden incremental.
+
 - **Gestión de Productos**: CRUD para los productos ofrecidos, incluyendo nombre, precio y disponibilidad (stock).
+
 - **Control de Inventario**: Manejo de insumos por categorías (alimentos, bebidas, limpieza, utensilios, otros), con alertas de stock bajo/sin stock y cálculo automático de estado.
+
 - **Filtros de Tareas**: Combina estado, prioridad, fechas (creación), empleado asignado y pedido asociado.
+
 - **Relaciones entre Modelos (Mongoose)**:
-  - Tarea → Pedido: Tareas pueden asociarse a un Pedido vía `pedidoAsociado` (ObjectId ref).
-  - Tarea → Empleado: Tareas pueden asignarse a un Empleado vía `empleadoAsignado` (ObjectId ref).
+  - **Tarea → Pedido**: Tareas pueden asociarse a un Pedido vía `pedidoAsociado` (ObjectId ref).
+  - **Tarea → Empleado**: Tareas pueden asignarse a un Empleado vía `empleadoAsignado` (ObjectId ref).
 
 ### Características Técnicas
 
 - API REST con CRUD completo y filtros, usando ES6 modules.
 - Modelos Mongoose (Schemas) para entidades (Usuario, Empleado, Pedido, Insumo, Producto, Tarea) con validaciones y referencias (ref).
-- Middleware personalizado para validaciones básicas y sanitización (`validation.js`).
+- Implementación de Autenticación con Passport.js, JWT (JSON Web Tokens) y bcryptjs para el hasheo de contraseñas.
+- Manejo de sesiones con Express Session.
+- Middleware personalizado para validaciones básicas y sanitización (`validation.js`), y middlewares de protección de acceso (`auth.js`, `authVistas.js`).
 - Vistas Pug con formularios y tablas responsivas (Bootstrap) para CRUD completo, interactuando con la API mediante fetch.
 - Base de datos NoSQL en MongoDB Atlas, gestionada con Mongoose.
 
 ## Arquitectura
 
-La estructura del proyecto ha evolucionado para incluir los nuevos módulos de seguridad:
+Se ha extendido y modularizado la arquitectura MVC para incorporar la funcionalidad de autenticación y autorización mediante Passport.js, JWT y Express Session.
+
+### Estructura del Proyecto
+
+Se ha expandido la estructura de carpetas para incluir nuevos módulos de autenticación (auth, Usuario) y configuración de Passport:
 
 ```
 📁 sabor-urbano-crud/
-├── 🔑 config/
-│   └── passport.js             # Configuración de estrategias (Local, JWT, Sesiones)
+├── ⚙️ config/
+│   ├── passport.js            # Configuración de estrategias Passport (Local, JWT)
+│   └── db.js                  # Conexión a MongoDB
 ├── 🎮 controllers/            # Lógica de negocio
-│   ├── authController.js       # NUEVO: Lógica de login/registro/JWT
-│   ├── clientesController.js   # (Existente)
+│   ├── authController.js      # Lógica de Registro, validación de credenciales y generación de JWT
 │   ├── empleadosController.js
 │   ├── insumosController.js
 │   ├── pedidosController.js
+│   ├── productosController.js
 │   └── tareasController.js
-├── 🏗️ models/                # Clases POO con relaciones
-│   ├── Usuario.js              # NUEVO: Modelo de acceso (Username/Password)
-│   ├── Cliente.js
+├── 🏗️ models/                # Schemas Mongoose
 │   ├── Empleado.js
 │   ├── Insumo.js
 │   ├── Pedido.js
-│   └── Tarea.js
-├── 🛣️ routes/                # Rutas API y vistas
-│   ├── auth.js                 # NUEVO: Rutas /auth/login y /auth/register
-│   ├── clientes.js
-│   ├── empleados.js            # Rutas API protegidas por Sesión
-│   ├── insumos.js              # Rutas API protegidas por Sesión
-│   ├── pedidos.js              # Rutas API protegidas por Sesión
-│   └── tareas.js               # Rutas API protegidas por Sesión
-├── 🎨 views/                 # Vistas Pug
-│   ├── auth/                   # NUEVO: Vistas de Login y Registro
-│   │   ├── login.pug
-│   │   └── register.pug
-│   ├── layout.pug              # Contiene lógica condicional (sesión)
-│   ├── error.pug
-│   ├── filters.pug
+│   ├── Producto.js
+│   ├── Tarea.js
+│   └── Usuario.js             # Modelo para Autenticación (con hasheo bcrypt)
+├── 🛣️ routes/                # Rutas API (Protegidas)
+│   ├── auth.js                # Rutas API /auth/register y /auth/login
+│   ├── empleados.js           # Rutas API CRUD Empleados
+│   ├── insumos.js             # Rutas API CRUD Insumos
+│   ├── pedidos.js             # Rutas API CRUD Pedidos
+│   ├── productos.js           # Rutas API CRUD Productos
+│   └── tareas.js              # Rutas API CRUD Tareas
+├── 🎨 views/                 # Vistas Pug (Protegidas)
+│   ├── auth/
+│   │   ├── login.pug          # Formulario de Login
+│   │   └── register.pug       # Formulario de Registro
 │   ├── empleados/
-│   │   ├── index.pug
-│   │   ├── nuevo.pug
-│   │   └── editar.pug
 │   ├── insumos/
 │   ├── pedidos/
-│   └── tareas/
-├── 🛡️ middleware/            # Validaciones y Seguridad
-│   ├── auth.js                 # NUEVO: Guardián para API (JWT strategy)
-│   ├── authVistas.js           # NUEVO: Guardianes para Vistas (Session strategy)
-│   └── validation.js
-├── 📊 data/                 # Base de datos JSON
+│   ├── productos/
+│   ├── tareas/
+│   ├── error.pug
+│   ├── filters.pug
+│   └── layout.pug             # Plantilla base (con lógica de sesión/logout)
+├── 🛡️ middleware/            # Middlewares de Express
+│   ├── auth.js                # Middleware de protección JWT (protect)
+│   ├── authVistas.js          # Middlewares de protección de Sesión (isLoggedIn, isLoggedOut)
+│   └── validation.js          # Validaciones personalizadas
+├── 📊 data/                 # Base de datos JSON (para referencia, ya migrados)
+│   ├── areas.json
+│   ├── clientes.json
+│   ├── empleados.json
+│   ├── insumos.json
+│   ├── pedidos.json
+│   ├── roles.json
+│   └── tareas.json
 ├── 🔄 scripts/               # Utilidades
-├── ⚙️ package.json          # Dependencias
-└── 🚀 app.js               # Servidor Express (con config de Session y Passport)
+│   └── normalizar_datos_v1.js
+├── 📦 node_modules/
+├── 📋 package.json
+├── 📄 .env                   # Variables de entorno
+└── 🚀 app.js                # Servidor Express (Rutas y Configuración Global)
 ```
 
 ## Instalación
@@ -112,9 +125,11 @@ La estructura del proyecto ha evolucionado para incluir los nuevos módulos de s
 ### Prerrequisitos
 
 - **Node.js**: v18 o superior.
-- **npm**: v8 o superior.
-- **MongoDB Atlas**: URI de conexión y acceso permitido.
-- **Dependencias de Seguridad (NUEVO)**: passport, express-session, bcryptjs, jsonwebtoken.
+- **npm**: v8 o superior (generalmente viene con Node.js).
+- **MongoDB Atlas**: Una cuenta y una base de datos creada. Necesitarás la URI de conexión.
+- **Git**: Para clonar el repositorio.
+- **Editor de código**: VS Code recomendado.
+- **(Opcional) Cliente API**: Thunder Client (extensión VS Code) o Postman para probar los endpoints API.
 
 ### Instalación Paso a Paso
 
@@ -128,127 +143,205 @@ La estructura del proyecto ha evolucionado para incluir los nuevos módulos de s
    ```bash
    npm install
    ```
+   Esto instalará Express, Mongoose, Pug, dotenv, y las dependencias de autenticación como passport, passport-local, passport-jwt, jsonwebtoken, bcryptjs, express-session.
 
-3. **Configurar Variables de Entorno (Actualizado):**
+3. **Configurar Variables de Entorno:**
    - Crea un archivo llamado `.env` en la raíz del proyecto.
-   - Añade tu URI de conexión de MongoDB Atlas y la nueva clave secreta para la autenticación:
+   - Añade tu URI de conexión de MongoDB Atlas y la nueva clave secreta para JWT/Sesión:
    ```env
    MONGODB_URI=mongodb+srv://tu_usuario:tu_contraseña@tu_cluster.mongodb.net/tu_base_de_datos?retryWrites=true&w=majority
-   PORT=3000
-   # Clave secreta para firmar sesiones y tokens JWT
-   JWT_SECRET=tu_clave_secreta_super_dificil_de_adivinar
+   PORT=3000 # Puedes cambiar el puerto si lo deseas
+   JWT_SECRET=tu_clave_secreta_jwt
+   ```
+   **Importante**: Asegúrate de que este archivo `.env` esté listado en tu `.gitignore` para no subir tus credenciales.
+
+4. **Verificar scripts en package.json:**
+   ```json
+   {
+     "scripts": {
+       "start": "node app.js",
+       "dev": "nodemon app.js",
+       "test": "echo \"Testing with Thunder Client\""
+     }
+   }
    ```
 
-4. **Iniciar el servidor:**
+5. **Iniciar el servidor:**
    - Modo Desarrollo (con auto-recarga):
    ```bash
    npm run dev
    ```
+   - Modo Producción:
+   ```bash
+   npm start
+   ```
 
-5. **Primer Uso (NUEVO):**
-   - Abre en tu navegador: `http://localhost:3000`. Serás redirigido a `/login`.
-   - Navega a `/register` para crear tu primer usuario y poder acceder al sistema.
+6. **Verificar:**
+   - La consola debería mostrar "🚀 Servidor corriendo en http://localhost:3000" y "✅ Conexión exitosa a MongoDB Atlas".
+   - Abre en tu navegador: `http://localhost:3000` (debería redirigir a `/login`).
 
-## Uso y Autenticación
+## Uso
 
-| URL | Protección | Flujo |
-|-----|-----------|-------|
-| `/register` | Pública (`isLoggedOut`) | Crea un nuevo Usuario. |
-| `/login` | Pública (`isLoggedOut`) | Inicia la sesión de usuario (crea la cookie de sesión). |
-| `/logout` | Privada | Destruye la sesión. |
-| `/tareas`, `/empleados`, etc. | Privada (`isLoggedIn`) | Acceso denegado si no hay sesión activa. |
+### Interfaces Web
+
+Las interfaces web ahora requieren autenticación para acceder a las rutas de gestión:
+
+| URL | Descripción | Acceso |
+|-----|-------------|--------|
+| `http://localhost:3000` | Redirige al login o a la gestión de tareas (`/tareas`) | Controlado |
+| `/login` | Formulario de inicio de sesión | Público (Solo si no está logueado) |
+| `/register` | Formulario de registro de nuevo usuario | Público (Solo si no está logueado) |
+| `/logout` | Cierre de sesión y borrado de cookie | Privado (Cualquier usuario logueado) |
+| `/tareas` | Listar, crear y editar Tareas | Privado (isLoggedIn) |
+| `/empleados` | Listar, crear y editar Empleados | Privado (isLoggedIn) |
+| `/pedidos` | Listar, crear y editar Pedidos | Privado (isLoggedIn) |
+| `/insumos` | Listar, crear y editar Insumos (Inventario) | Privado (isLoggedIn) |
+| `/productos` | Listar, crear y editar Productos | Privado (isLoggedIn) |
+| `/filtros` | Formulario para aplicar filtros a la lista de Tareas | Privado (isLoggedIn) |
+
+### API
+
+- **Base URL**: `http://localhost:3000/api`
+- **Formato**: JSON
+- **Autenticación**: Requerida (basada en Sesión/Cookie en la implementación de rutas actual, aunque el sistema está preparado para JWT).
 
 ## API Endpoints
 
-**Nota**: Todas las rutas API (`/api/*`) están protegidas por el middleware de Sesión (`isLoggedIn`).
-
-### Autenticación (NUEVO)
+### Autenticación (`/auth`)
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| POST | `/auth/register` | (API) Crea un Usuario y devuelve éxito (usado para Thunder Client/Futuros Frontends). |
-| POST | `/auth/login` | (API) Autentica credenciales y devuelve un Token JWT para uso en API. |
+| POST | `/register` | Registra un nuevo usuario en la base de datos |
+| POST | `/login` | Autentica un usuario (local) y devuelve un JWT |
 
-### Recursos Protegidos
+### Empleados (`/api/empleados`)
 
-(El resto de los Endpoints de Empleados, Tareas, Pedidos, Insumos, y Productos mantienen su funcionalidad CRUD, pero ahora requieren autenticación para funcionar).
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/` | Obtener todos los empleados (Protegido) |
+| POST | `/` | Crear un nuevo empleado (Protegido) |
+| PUT | `/:id` | Actualizar un empleado (Protegido) |
+| DELETE | `/:id` | Eliminar un empleado (Protegido) |
+
+### Tareas (`/api/tareas`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/` | Obtener tareas (soporta filtros) (Protegido) |
+| POST | `/` | Crear una nueva tarea (Protegido) |
+| PUT | `/:id` | Actualizar una tarea (Protegido) |
+| DELETE | `/:id` | Eliminar una tarea (Protegido) |
+| PATCH | `/:id/iniciar` | Marcar tarea como "en_proceso" (Protegido) |
+| PATCH | `/:id/finalizar` | Marcar tarea como "finalizada" (Protegido) |
+
+_(Los endpoints de Pedidos, Insumos y Productos bajo `/api/` también están protegidos por la sesión del usuario.)_
 
 ## Interfaces Web
 
-Las vistas web están construidas con Pug y Bootstrap 5, proporcionando una interfaz responsiva para todas las operaciones CRUD del sistema.
+- **MODIFICADO: Autenticación**: Se añadieron formularios de Login y Registro (`login.pug`, `register.pug`).
+- **MODIFICADO: Navegación**: El `layout.pug` ahora incluye la lógica condicional para mostrar el menú de navegación completo y el botón de Cerrar Sesión solo cuando el usuario está autenticado.
+- **Tareas/Empleados/Pedidos/Insumos/Productos**: Las vistas CRUD siguen el mismo diseño responsivo con Pug/Bootstrap y utilizan fetch para interactuar con los endpoints de la API, ahora asegurados por middlewares de sesión.
+- **Filtros**: El formulario en `filters.pug` continúa enviando parámetros GET a `/tareas/filtrar`.
 
 ## Testing
 
-Para probar la API y la seguridad, se recomienda usar **Thunder Client**.
+Se recomienda usar un cliente API como Thunder Client o Postman, y el navegador para la autenticación de vistas.
 
-### Flujo de Prueba de Seguridad:
+### Ejemplos de Pruebas de Autenticación:
 
-1. **Obtener Token**: POST `/auth/login` con credenciales de Usuario.
-2. **Acceso a API**: Enviar el Token obtenido en el header `Authorization: Bearer <token>` a cualquier endpoint `/api/*`.
+1. **Registro de Usuario (API):**
+   ```
+   POST http://localhost:3000/auth/register
+   ```
+   Body (JSON):
+   ```json
+   {
+     "nombre": "Test",
+     "apellido": "User",
+     "email": "test@saborurbano.com",
+     "username": "testuser",
+     "password": "Password123"
+   }
+   ```
+   **Respuesta Esperada**: 201 Created con `success: true`.
+
+2. **Login y Obtención de JWT (API):**
+   ```
+   POST http://localhost:3000/auth/login
+   ```
+   Body (JSON):
+   ```json
+   {
+     "username": "testuser",
+     "password": "Password123"
+   }
+   ```
+   **Respuesta Esperada**: 200 OK con un campo `token: "Bearer <JWT>"`.
+
+3. **Acceso a Vistas Protegidas (Navegador):**
+   - Navegar a `http://localhost:3000/tareas`. Debe redirigir automáticamente a `/login`.
+   - Acceder a `/login`, ingresar credenciales válidas y hacer clic en Iniciar Sesión.
+   - **Resultado Esperado**: Redirección a `/tareas` con la barra de navegación completa y el botón Cerrar Sesión.
 
 ## Estructura del Proyecto
 
-### Modelos (POO)
+### Modelos (Mongoose Schemas)
 
-- **Clases**: Usuario (NUEVO), Empleado, Insumo, Pedido, Tarea.
-- **Relaciones entre Modelos (Mongoose)**:
-  - Tarea → Pedido: Tareas pueden asociarse a un Pedido vía `pedidoAsociado` (ObjectId ref).
-  - Tarea → Empleado: Tareas pueden asignarse a un Empleado vía `empleadoAsignado` (ObjectId ref).
-- **Separación**: Usuario maneja credenciales (username, password), Empleado maneja datos laborales.
+- **Clases**: Usuario, Empleado, Insumo, Pedido, Producto, Tarea.
+- **MEJORA: Usuario-Autenticación**: El nuevo modelo `Usuario` gestiona las credenciales de acceso (username, email únicos y password hasheada con bcryptjs).
 
 ### Middleware
 
-- `authVistas.js` y `auth.js` protegen las rutas web y API, respectivamente.
-- `validation.js`: Validaciones de campos.
+- **MEJORA**: Implementación de Passport.js para estrategias Local y JWT.
+- **MEJORA**: Uso de middlewares `isLoggedIn` y `isLoggedOut` para controlar el flujo de navegación de las vistas.
 
-## Tecnologías (Actualizado)
+## Tecnologías
 
-- **Backend**: Node.js, Express.js
-- **Base de Datos**: MongoDB Atlas, Mongoose ODM
-- **Seguridad (NUEVO)**:
-  - Passport.js: Estrategias Local y JWT.
-  - Bcryptjs: Hashing de contraseñas.
-  - Express-Session: Manejo de sesiones de usuario.
-- **Frontend**: Pug, Bootstrap 5
-- **Herramientas**: Dotenv, Nodemon
+- **Backend**: Node.js (v18+), Express.js
+- **Base de Datos**: MongoDB Atlas
+- **ODM**: Mongoose
+- **Autenticación**: Passport.js (Local & JWT Strategies), jsonwebtoken, bcryptjs, express-session.
+- **Motor de Plantillas**: Pug
+- **Frontend Framework**: Bootstrap 5
+- **Iconos**: Font Awesome 6
+- **Variables de Entorno**: dotenv
+- **Desarrollo**: Nodemon
 
-## Ejemplos (cURL)
+## Ejemplos
 
-### Crear Empleado (Ya logueado):
-```bash
-curl -X POST http://localhost:3000/api/empleados \
-  -H "Content-Type: application/json" \
-  -H "Cookie: connect.sid=[TU_COOKIE_SESION]" \
-  -d '{"nombre":"Juan","apellido":"Doe","email":"juan@example.com","telefono":"11-1234-5678","rol":"cocinero","area":"cocina"}'
-```
+_(Sección disponible para agregar ejemplos adicionales de uso)_
 
 ## Contribución
 
 1. Haz un Fork del repositorio.
-2. Crea una nueva rama.
+2. Crea una nueva rama para tu feature.
 3. Realiza tus cambios y haz commit.
-4. Empuja la rama y abre un Pull Request.
+4. Empuja tu rama y abre un Pull Request.
 
 ## Licencia
 
 MIT
 
-## Responsabilidades del Equipo (Actualizado)
+## Responsabilidades del Equipo
 
-- **Juan Dualibe** (Project Manager & Fullstack): Coordinación, implementación del sistema de autenticación (Passport/Session), refactorización de rutas y despliegue en Render.
-- **Nicolás Weibel** (Backend Lead / Arquitecto): Diseño de la arquitectura MVC, separación de modelos (Usuario vs Empleado) y estructura de seguridad.
-- **Germán Rodríguez** (Database & Models): Gestión de MongoDB Atlas, diseño de Schemas Mongoose, relaciones y conexión a base de datos.
-- **Rocío Gómez** (API & Controller Developer): Desarrollo de controladores, lógica de negocio en endpoints y manejo de respuestas API.
-- **Juan Manuel Gasbarro** (Frontend & Views): Actualización de vistas Pug (Login, Register, Layout), scripts de interfaz y pruebas funcionales.
+_(Ajustar según corresponda)_
+
+- **Juan Dualibe** (Project Manager / Infraestructura): Coordinación, actualización de `app.js` (sesiones, passport, rutas de auth), gestión de dependencias.
+- **Nicolás Weibel** (Backend Lead / Arquitecto): Diseño de arquitectura, configuración de `config/passport.js`, creación de middlewares de protección (`auth.js`, `authVistas.js`).
+- **Germán Rodríguez** (Database & Models): Creación del modelo `models/Usuario.js` (con bcryptjs, validaciones y métodos de comparación).
+- **Rocío Gómez** (API & Controller Developer): Implementación de `controllers/authController.js` (registro y generación de JWT).
+- **Juan Manuel Gasbarro** (Frontend & Views / Tester): Desarrollo de las vistas de autenticación (`login.pug`, `register.pug`), modificación de `layout.pug` para manejo de sesión, pruebas funcionales de los flujos de login/logout.
 
 ## Bibliografía
 
-- [Documentación Oficial Node.js](https://nodejs.org/)
+- [Documentación Oficial Node.js](https://nodejs.org/docs)
 - [Express.js Guide](https://expressjs.com/)
-- [Mongoose ODM](https://mongoosejs.com/)
+- [Mongoose ODM](https://mongoosejs.com/docs/guide.html)
+- [Passport.js – Documentación oficial](https://www.passportjs.org/)
+- [JSON Web Tokens (JWT) – jwt.io](https://jwt.io/)
+- [bcryptjs - npm](https://www.npmjs.com/package/bcryptjs)
+- [Express-session – Manejo de sesiones](https://www.npmjs.com/package/express-session)
 - [Pug Template Engine](https://pugjs.org/)
-- [Bootstrap Documentation](https://getbootstrap.com/)
-- [MDN Web Docs](https://developer.mozilla.org/)
+- [Bootstrap Documentation](https://getbootstrap.com/docs/5.1/)
+- [MDN Web Docs (Fetch API, Async/Await)](https://developer.mozilla.org/)
 - [MongoDB Atlas Documentation](https://www.mongodb.com/docs/atlas/)
-- [Passport.js Documentation](https://www.passportjs.org/)
-- [Express-Session NPM](https://www.npmjs.com/package/express-session)
